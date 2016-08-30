@@ -1,0 +1,102 @@
+{% import 'macros.html' as macros with context %}
+
+{% extends 'administrators/layout.html' %}
+
+{% set navbar = 'redeemables' %}
+{% set title = 'Recipes - Overview' %}
+
+{% block component %}
+    <div class="row">
+        <div class="span12">
+            <div class="page-header">
+                <a
+                    class="btn btn-success pull-right"
+                    href="{{ url_for('administrators.filters_add') }}"
+                    >
+                    <span class="icon-plus"></span>
+                    Add
+                </a>
+                <h1>{{ title }}</h1>
+            </div>
+            {% if filters %}
+                <table class="table table-hover table-striped">
+                    <tr>
+                        <th class="narrow">Pack</th>
+                        <th>Name</th>
+                        <th class="narrow right">Conditions</th>
+                        <th class="narrow right">Steps</th>
+                        <th class="buttons">Status</th>
+                        <th class="buttons">Position</th>
+                        <th class="buttons">Actions</th>
+                    </tr>
+                    {% for filter in filters %}
+                        <tr>
+                            <td class="narrow">
+                                {{ filter.pack.name|default('N/A') }}
+                            </td>
+                            <td>
+                                <i
+                                    class="icon-info-sign pull-right"
+                                    data-container="body"
+                                    data-html="true"
+                                    data-toggle="tooltip"
+                                    title="{{ filter.name }}"
+                                    ></i>
+                                {{ filter.name|truncate(25) }}
+                            </td>
+                            <td class="narrow right">
+                                {{ filter.conditions|length|format_integer }}
+                            </td>
+                            <td class="narrow right">
+                                {{ filter.steps|length|format_integer }}
+                            </td>
+                            <td class="buttons">
+                                <a
+                                    class="btn btn-mini {{ 'btn-success' if filter.status == 'On' else 'btn-danger' }}"
+                                    href="{{ url_for('administrators.filters_status', id=filter.id) }}"
+                                    >
+                                    <i class="icon-{{ 'plus-sign' if filter.status == 'On' else 'minus-sign' }}">
+                                    </i>
+                                    {{ filter.status }}
+                                </a>
+                            </td>
+                            <td class="buttons">
+                                <a
+                                    class="btn btn-mini"
+                                    href="{{ url_for('administrators.filters_position', id=filter.id, direction='up') }}"
+                                    {% if loop.first %}
+                                        style="visibility: hidden"
+                                    {% endif %}
+                                    >
+                                    <i class="icon-circle-arrow-up lone"></i>
+                                </a>
+                                <a
+                                    class="btn btn-mini"
+                                    href="{{ url_for('administrators.filters_position', id=filter.id, direction='down') }}"
+                                    {% if loop.last %}
+                                        style="visibility: hidden"
+                                    {% endif %}
+                                    >
+                                    <i class="icon-circle-arrow-down lone"></i>
+                                </a>
+                            </td>
+                            <td class="buttons">
+                                <a
+                                    class="btn btn-mini btn-success"
+                                    href="{{ url_for('administrators.filters_edit', id=filter.id) }}"
+                                    >
+                                    <i class="icon-edit-sign"></i>
+                                    Edit
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <div class="alert alert-error">
+                    There are no recipes in the database.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

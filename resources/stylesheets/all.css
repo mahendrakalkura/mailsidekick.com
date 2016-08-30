@@ -1,0 +1,796 @@
+@font-face {
+    font-family: 'Open Sans';
+    font-style: italic;
+    font-weight: 800;
+    src:
+        local('Open Sans'),
+        url('../fonts/PRmiXeptR36kaC0GEAetxkCDe67GEgBv_HnyvHTfdew.woff?')
+        format('woff');
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 700;
+    src:
+        local('Open Sans'),
+        url('../fonts/k3k702ZOKiLJc3WVjuplzHhCUOGz7vYGh680lGh-uXM.woff')
+        format('woff');
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-style: italic;
+    font-weight: 700;
+    src:
+        local('Open Sans'),
+        url('../fonts/PRmiXeptR36kaC0GEAetxjqR_3kx9_hJXbbyU8S6IN0.woff')
+        format('woff');
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 600;
+    src:
+        local('Open Sans'),
+        url('../fonts/MTP_ySUJH_bn48VBG8sNSnhCUOGz7vYGh680lGh-uXM.woff')
+        format('woff');
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-style: italic;
+    font-weight: 600;
+    src:
+        local('Open Sans'),
+        url('../fonts/PRmiXeptR36kaC0GEAetxn5HxGBcBvicCpTp6spHfNo.woff')
+        format('woff');
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 400;
+    src:
+        local('Open Sans'),
+        url('../fonts/cJZKeOuBrn4kERxqtaUH3T8E0i7KZn-EPnyo3HZu7kw.woff')
+        format('woff');
+}
+
+a[class^="icon-"] {
+    text-decoration: none;
+}
+
+body {
+    background: #ffffff;
+    color: #333333;
+    font-family: "Open Sans",Helvetica,Arial,sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    overflow-x: hidden;
+    padding: 20px 0 0 0;
+}
+
+dl {
+    margin: 0;
+}
+
+form {
+    margin: 0;
+}
+
+hr, h1, h2, h3, h4, h5, h6 {
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+    margin-top: 0px;
+}
+
+ol, ul {
+    margin-bottom: 20px;
+}
+
+p {
+    line-height: 30px;
+    margin-bottom: 20px;
+    word-wrap: break-word;
+}
+
+*, button, input, select, textarea, .btn {
+    font-family: "Open Sans",Helvetica,Arial,sans-serif;
+}
+
+[class^="icon-"] {
+    margin-right: 2.5px;
+}
+
+[class^="icon-"].lone {
+    margin-right: 0;
+}
+
+.alert label {
+    margin: 0;
+}
+
+.alert p:last-child {
+    margin-bottom: 0;
+}
+
+.article {
+    padding: 20px;
+}
+
+.article h4 {
+    margin-bottom: 20px;
+}
+
+.attachments {
+    margin-bottom: 5px;
+    position: relative;
+}
+
+.attachments select {
+    margin-right: 5px;
+    width: 100px;
+}
+
+.attachments input {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    height: 30px !important;
+    width: 375px;
+}
+
+.attachments select ~ select {
+    margin-right: 5px;
+    width: 250px;
+}
+
+.attachments .icon-keyboard {
+    position: absolute;
+    right: 35px;
+    top: 7.5px;
+}
+
+.attachments .icon-remove-sign {
+    position: absolute;
+    right: 5px;
+    top: 7.5px;
+}
+
+.banner {
+    background: #e74c3c;
+    border: 1px solid #e74c3c;
+    color: #ffffff;
+    font-weight: bold;
+    text-align: center;
+}
+
+.banner a {
+    color: #bdc3c7;
+    text-decoration: underline;
+}
+
+.banner .clock {
+    font-size: 15px;
+    margin: 20px 0 10px 140px;
+}
+
+.banner .clock .flip-clock-label {
+    color: #ffffff;
+    font-weight: bold;
+    padding-bottom: 10px;
+}
+
+.banner .clock .flip-clock-divider.days .flip-clock-label {
+    right: -88px;
+}
+
+.banner .clock .flip-clock-divider.hours .flip-clock-label {
+    right: -90px;
+}
+
+.banner .clock .flip-clock-divider.minutes .flip-clock-label {
+    right: -100px;
+}
+
+.banner .clock .flip-clock-divider.seconds .flip-clock-label {
+    right: -100px;
+}
+
+.banner .clock li {
+    line-height: 87px;
+}
+
+.banner .clock ul li a div div.inn {
+    color: #ffffff;
+}
+
+.box {
+    height: 250px;
+    margin-bottom: 20px;
+    overflow-y: scroll;
+}
+
+.box .alert {
+    margin-right: 20px;
+}
+
+.btn.clearfix.pull-right {
+    margin-top: 5px;
+    margin-bottom: 20px;
+}
+
+.btn-group.pull-right + .btn-group.pull-right,
+.btn-group.pull-right + .btn.pull-right,
+.btn.pull-right + .btn-group.pull-right,
+.btn.pull-right + .btn.pull-right {
+    margin-right: 20px;
+}
+
+.btn-group + .btn-group {
+    margin-left: 0;
+}
+
+.calculator .modal-body p input {
+    margin-right: 5px;
+    width: 407px;
+}
+
+.calculator .modal-body p select {
+    width: 100px;
+}
+
+.center,
+.table .center {
+    text-align: center;
+}
+
+.conditions {
+    margin-bottom: 5px;
+    position: relative;
+}
+
+.conditions .icon-asterisk {
+    position: absolute;
+    right: 30px;
+    top: 7.5px;
+}
+
+.conditions .icon-remove-sign {
+    position: absolute;
+    right: 5px;
+    top: 7.5px;
+}
+
+.conditions [name="operand_1"] {
+    margin-right: 5px;
+    width: 100px;
+}
+
+.conditions [name="operator"] {
+    margin-right: 5px;
+    width: 250px;
+}
+
+.conditions [name="operand_2"] {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    height: 30px !important;
+    width: 375px;
+}
+
+.control-group {
+    margin-bottom: 20px;
+}
+
+.control-group.required > label {
+    font-weight: bold;
+}
+
+.control-group.steps {
+    margin-bottom: 0;
+}
+
+.control-group.steps > .control-label {
+    line-height: 26px;
+    margin-right: 20px;
+}
+
+.cursor {
+    cursor: pointer;
+}
+
+.daterangepicker {
+    margin: 0;
+    min-width: 260px !important;
+    padding: 0;
+    padding: 0;
+}
+
+.daterangepicker .applyBtn {
+    width: 100%;
+}
+
+.daterangepicker .calendar {
+    border: 0 !important;
+    margin: 5px 0 5px 5px !important;
+    max-width: 300px !important;
+    padding: 0 !important;
+}
+
+.daterangepicker .calendar table th,
+.daterangepicker .calendar table td {
+    border-radius: 0 !important;
+    -moz-border-radius: 0 !important;
+    -webkit-border-radius: 0 !important;
+    border: 1px solid #e5e5e5 !important;
+    font-family: "Open Sans",Helvetica,Arial,sans-serif;
+    height: 25px !important;
+    padding: 5px !important;
+    width: 35px !important;
+}
+
+.daterangepicker .calendar table td.off {
+    color: #e5e5e5;
+}
+
+.daterangepicker .clearBtn {
+    display: none;
+}
+
+.daterangepicker .ranges {
+    margin: 5px !important;
+    width: 250px;
+}
+
+.daterangepicker .ranges label {
+    display: none;
+}
+
+.daterangepicker .ranges li {
+    font-size: 14px;
+    margin-bottom: 5px;
+    padding: 5px;
+}
+
+.daterangepicker .daterangepicker_end_input,
+.daterangepicker .daterangepicker_start_input {
+    display: block !important;
+    float: none !important;
+    padding: 0 !important;
+}
+
+.daterangepicker .daterangepicker_end_input input,
+.daterangepicker .daterangepicker_start_input input {
+    font-size: 14px;
+    margin-bottom: 5px;
+    width: 236px !important;
+}
+
+.dropdown-menu {
+    min-width: 200px;
+}
+
+.dropdown-menu > li > a {
+    padding-left: 10px;
+}
+
+.dropdown-menu > li > a .badge {
+    line-height: 15px;
+}
+
+.files {
+    list-style: none;
+    margin-left: 0;
+}
+
+.form-actions {
+    margin-top: 0;
+}
+
+.form-actions .btn {
+    margin-right: 17px;
+}
+
+.form-actions .btn.pull-right {
+    margin-right: 0;
+}
+
+.form-horizontal pre {
+    margin-bottom: 20px;
+}
+
+.form-horizontal .controls h1,
+.form-horizontal .controls h2,
+.form-horizontal .controls h3,
+.form-horizontal .controls h4,
+.form-horizontal .controls h5,
+.form-horizontal .controls h6 {
+    margin-bottom: 0;
+}
+
+.form-horizontal .controls ul {
+    margin: 0;
+}
+
+.form-horizontal .controls ul li {
+    list-style: none;
+    margin: 0;
+}
+
+.form-horizontal .controls ul li label {
+    line-height: 30px;
+    margin-bottom: 0;
+    vertical-align: middle;
+}
+
+.form-horizontal .controls ul li label [type="checkbox"],
+.form-horizontal .controls ul li label [type="radio"] {
+    margin: -1px 5px 0 0;
+    vertical-align: middle;
+}
+
+.form-horizontal .controls ul li ul {
+    margin-left: 25px;
+}
+
+.form-horizontal .controls .delay-quantity {
+    margin-right: 5px;
+    width: 632px;
+}
+
+.form-horizontal .controls .delay-unit {
+    margin-right: 5px;
+    width: 100px;
+}
+
+.form-horizontal .controls [type="checkbox"],
+.form-horizontal .controls [type="radio"] {
+    margin-top: 8px;
+    margin-bottom: 4px;
+}
+
+.form-horizontal .controls .bootstrap-filestyle {
+    position: relative;
+}
+
+.form-horizontal .controls .bootstrap-filestyle input {
+    margin-bottom: 5px;
+    width: 725px;
+}
+
+.form-horizontal .controls .bootstrap-filestyle label {
+    position: absolute;
+    right: 0;
+    text-align: left;
+    width: 75px;
+}
+
+.form-horizontal .controls .bootstrap-filestyle + .icon-remove-sign {
+    margin-left: 5px;
+    margin-right: 0;
+}
+
+.form-horizontal .help-block {
+    color: #0088cc;
+    margin-top: 10px;
+}
+
+.form-horizontal .input-append.date {
+    display: block;
+    width: 735px;
+}
+
+.modal-body {
+    padding-bottom: 1px;
+}
+
+.modal-body p {
+    margin-bottom: 10px;
+}
+
+.monospace {
+    font-family: monospace;
+}
+
+.navbar .nav .dropdown > a {
+    padding-right: 25px;
+}
+
+.navbar .nav .dropdown > .caret.icon-caret-down {
+    background-position: center center;
+    border: 0;
+    cursor: pointer;
+    height: 25px;
+    position: absolute;
+    right: 0px;
+    text-align: center;
+    top: 14px;
+    vertical-align: middle;
+    width: 25px;
+}
+
+.navbar .nav li.dropdown.open > .dropdown-toggle,
+.navbar .nav li.dropdown.active > .dropdown-toggle,
+.navbar .nav li.dropdown.open.active > .dropdown-toggle {
+    background-color: inherit;
+    border: 0;
+}
+
+.nav-list > li > a,
+.nav-list .nav-header {
+    font-size: 14px;
+}
+
+.nav-tabs > li > a {
+    color: #0088cc;
+    font-weight: bold;
+}
+
+.nav-tabs > .active > a,
+.nav-tabs > .active > a:hover,
+.nav-tabs > .active > a:focus {
+    color: #0088cc;
+    font-weight: bold;
+}
+
+.navbar {
+    margin-bottom: 20px;
+}
+
+.notes li {
+    line-height: 30px;
+}
+
+.page-header {
+    margin-top: 0;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    position: relative;
+}
+
+.page-header > div > .btn {
+    margin-left: 20px;
+    margin-top: 5px;
+}
+
+.page-header > .btn,
+.page-header > .btn-group {
+    margin-top: 5px;
+}
+
+.page-header > .btn-group > .btn {
+    margin-top: 0;
+}
+
+.page-header h1,
+.page-header h2,
+.page-header h3,
+.page-header h4,
+.page-header h5,
+.page-header h6 {
+    margin-bottom: 0;
+}
+
+.pagination {
+    margin-bottom: 20px;
+    margin-top: 0;
+    text-align: center;
+}
+
+.pagination > span {
+    line-height: 30px;
+}
+
+.pagination > span > ul {
+    margin-left: 10px;
+    vertical-align: top;
+}
+
+.popover.tour {
+    min-width: 500px;
+}
+
+.popover.tour .popover-content {
+    padding: 10px;
+}
+
+.popover.tour .popover-navigation {
+    padding: 0 10px 10px 10px;
+}
+
+.popover.tour .popover-title {
+    font-weight: bold;
+    padding: 10px;
+}
+
+.questions {
+    bottom: 20px;
+    right: 0;
+    position: absolute;
+}
+
+.queues .badge {
+    margin-left: 10px;
+    vertical-align: bottom;
+}
+
+.right,
+.table .right {
+    text-align: right;
+}
+
+.schedule .btn-group + .btn-group {
+    margin-top: 1px;
+}
+
+.schedule .btn-group .btn {
+    margin-right: 2px;
+    padding-left: 10px;
+    padding-right: 10px;
+    text-align: right;
+    width: 62px;
+}
+
+.slider.slider-horizontal {
+    width: 940px !important;
+}
+
+.slider.slider-horizontal .round {
+    color: #ffffff;
+    text-align: center;
+}
+
+.survey {
+    bottom: 52px;
+    right: 0;
+    position: absolute;
+}
+
+.table tr th {
+    background-color: #333333 !important;
+    border: 1px solid #dddddd !important;
+    color: #ffffff;
+    position: relative;
+    white-space: nowrap;
+}
+
+.table tr th a {
+    color: inherit;
+}
+
+.table tr th i {
+    position: absolute;
+    right: 5px;
+    top: 11px;
+}
+
+.table tr td {
+    line-height: 23px;
+    white-space: nowrap;
+}
+
+.table tr td [class^="icon"] {
+    margin-top: 5px;
+}
+
+.table tr td .row {
+    margin: 0;
+    width: 924px;
+}
+
+.table tr td .row .span6 {
+    line-height: 28px;
+    margin: 0;
+    width: 462px;
+}
+
+.table tr td .row .span6 .label {
+    line-height: 19px;
+}
+
+.table tr td .row .span6 .btn {
+    margin-right: 4px;
+}
+
+.table tr .buttons {
+    text-align: center;
+    white-space: nowrap;
+    width: 1px;
+}
+
+.table tr .buttons .btn {
+    margin-left: 2px;
+    margin-right: 2px;
+    vertical-align: top;
+}
+
+.table .hour {
+    text-align: center;
+    width: 43px;
+}
+
+.table tr .narrow {
+    white-space: nowrap;
+    width: 1px;
+}
+
+.table tr .sort {
+    padding-right: 30px;
+}
+
+.table tr .small {
+    width: 100px;
+}
+
+.tooltip-inner {
+    white-space: normal;
+}
+
+.top {
+    position: relative;
+}
+
+.top .dropdown {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.top .one {
+    display: block;
+    margin-top: 42px;
+}
+
+.top .two {
+    display: block;
+}
+
+.videos {
+    width: 605px;
+}
+
+.videos .modal-body {
+    height: 335px;
+}
+
+.well-large {
+    padding: 20px 20px 0 20px;
+}
+
+.wide-input {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    height: 30px !important;
+    width: 100%;
+}
+
+.wide-select {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    width: 100%;
+}
+
+.wide-textarea {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    width: 100%;
+}
+
+.wide-textarea.simple {
+    margin-bottom: 0;
+}
+
+.wysihtml5-toolbar > li > * {
+    margin: 0 5px 5px 0;
+}

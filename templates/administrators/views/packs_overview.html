@@ -1,0 +1,86 @@
+{% import 'macros.html' as macros with context %}
+
+{% extends 'administrators/layout.html' %}
+
+{% set navbar = 'redeemables' %}
+{% set title = 'Recipe Packs - Overview' %}
+
+{% block component %}
+    <div class="row">
+        <div class="span12">
+            <div class="page-header">
+                <a
+                    class="btn btn-success pull-right"
+                    href="{{ url_for('administrators.packs_add') }}"
+                    >
+                    <span class="icon-plus"></span>
+                    Add
+                </a>
+                <h1>{{ title }}</h1>
+            </div>
+            {% if packs %}
+                {{ macros.pagination({'name': 'administrators.packs_process', 'options': {},}, pager) }}
+                <table class="table table-hover table-striped">
+                    <tr>
+                        {{ macros.th({'name': 'administrators.packs_process', 'options': {},}, order_by, 'name', 'Name', '') }}
+                        <th class="narrow right">Recipes</th>
+                        <th class="buttons">Actions</th>
+                    </tr>
+                    {% for pack in packs %}
+                        <tr>
+                            <td>{{ pack.name }}</td>
+                            <td class="narrow right">
+                                {{ pack.filters.order_by('id asc').count()|format_integer }}
+                            </td>
+                            <td class="buttons">
+                                <a
+                                    class="btn btn-mini btn-success"
+                                    href="{{ url_for('administrators.packs_edit', id=pack.id) }}"
+                                    >
+                                    <i class="icon-edit-sign"></i>
+                                    Edit
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                {{ macros.pagination({'name': 'administrators.packs_process', 'options': {},}, pager) }}
+            {% else %}
+                <div class="alert alert-error">
+                    There are no recipe packs in the database.
+                </div>
+            {% endif %}
+            <hr>
+            <div class="page-header">
+                <h1>Filters</h1>
+            </div>
+            <form
+                action="{{ url_for('administrators.packs_process') }}"
+                class="form-horizontal"
+                method="post"
+                >
+                {{ macros.form(form) }}
+                <div class="form-actions">
+                    <button
+                        class="btn btn-success"
+                        name="submit"
+                        type="submit"
+                        value="set"
+                        >
+                        <i class="icon-plus-sign-alt"></i>
+                        Set
+                    </button>
+                    <button
+                        class="btn btn-danger"
+                        name="submit"
+                        type="submit"
+                        value="unset"
+                        >
+                        <i class="icon-minus-sign-alt"></i>
+                        Unset
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

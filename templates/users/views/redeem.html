@@ -1,0 +1,85 @@
+{% import 'macros.html' as macros with context %}
+
+{% extends 'users/layout.html' %}
+
+{% set title = 'Redeem' %}
+
+{% block component %}
+    <div class="row">
+        <div class="span12">
+            {{ macros.errors(form) }}
+            <div class="page-header">
+                <h1>{{ title }}</h1>
+            </div>
+            {% if status %}
+                <p>You have successfully redeemed the following:</p>
+                {% if items['templates'] %}
+                    <p>
+                        <strong>
+                            <a href="{{ url_for('users.templates_overview') }}">
+                                Templates:
+                            </a>
+                        </strong>
+                    </p>
+                    <ul>
+                        {% for item in items['templates'] %}
+                            <li>{{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                {% if items['packs'] %}
+                    <p>
+                        <strong>
+                            <a href="{{ url_for('users.packs_overview') }}">
+                                Recipe Packs:
+                            </a>
+                        </strong>
+                    </p>
+                    <ul>
+                        {% for item in items['packs'] %}
+                            <li>{{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                {% if items['filters'] %}
+                    <p>
+                        <strong>
+                            <a href="{{ url_for('users.filters_overview') }}">
+                                Recipes:
+                            </a>
+                        </strong>
+                    </p>
+                    <ul>
+                        {% for item in items['filters'] %}
+                            <li>{{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                    <p>
+                        Please note that the placeholder email account has been
+                        applied to these recipes by default. Open each recipe
+                        and make any desired modifications before putting them
+                        to work. Enjoy!
+                    </p>
+                {% endif %}
+                <hr>
+            {% endif %}
+            <form
+                action="{{ url_for('users.redeem') }}"
+                class="form-horizontal"
+                method="post"
+                >
+                {{ macros.form(form) }}
+                <div class="form-actions">
+                    <button class="btn btn-success" type="submit">
+                        <i class="icon-info-sign"></i>
+                        Submit
+                    </button>
+                    <button class="btn btn-danger" type="reset">
+                        <i class="icon-trash"></i>
+                        Reset
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

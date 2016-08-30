@@ -1,0 +1,1398 @@
+{% macro alerts_accounts() %}
+    {% if not g.user.accounts.count() %}
+        <p class="alert alert-error">
+            <i class="icon-warning-sign"></i>
+            You have yet to add an account. Please do so before proceeding with
+            the templates/recipes.
+        </p>
+    {% endif %}
+{% endmacro %}
+
+{% macro alerts_groups() %}
+    {% if not g.user.groups.count() %}
+        <p class="alert alert-error">
+            <i class="icon-warning-sign"></i>
+            You have yet to add a group. Please do so before proceeding with
+            the accounts.
+        </p>
+    {% endif %}
+{% endmacro %}
+
+{% macro copyright() %}
+    <div class="row">
+        <div class="span12">
+            <hr>
+            <p class="clearfix">
+                <span class="pull-right">
+                    &copy; {{ g.year }} - All Rights Reserved
+                </span>
+                {% if g.user and g.user.ID == 3 %}
+                    {{ g.settings.version }}
+                    -
+                    <a data-toggle="modal" href="#change_log">Change Log</a>
+                {% endif %}
+            </p>
+        </div>
+    </div>
+    <div class="modal fade hide" id="change_log">
+        <div class="modal-header">
+            <button
+                aria-hidden="true"
+                class="close"
+                data-dismiss="modal"
+                type="button"
+                >&times;</button>
+            <h3>Change Log</h3>
+        </div>
+        <div class="modal-body">
+            {{ g.settings.change_log|safe }}
+        </div>
+        <div class="modal-footer">
+            <a class="btn pull-right" data-dismiss="modal">Close</a>
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro errors(form) %}
+    {% if form.errors %}
+        {% for name, errors in form.errors|dictsort if errors %}
+            {% for error in errors %}
+                <div class="alert alert-error">
+                    <label for="{{ form[name].id }}">
+                        <i class="icon-warning-sign"></i>
+                        {{ error }}
+                    </label>
+                </div>
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
+
+{% macro flash() %}
+    {% with items = get_flashed_messages(with_categories=true) %}
+        {% for key, value in items %}
+            <div class="row">
+                <div class="span12">
+                    <div class="alert alert-{{ key }}">
+                        {% set class = '' %}
+                        {% if key == 'error' %}
+                            {% set class = 'icon-warning-sign' %}
+                        {% endif %}
+                        {% if key == 'success' %}
+                            {% set class = 'icon-info-sign' %}
+                        {% endif %}
+                        <span class="{{ class }}"></span>
+                        {{ value }}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endwith %}
+{% endmacro %}
+
+{% macro form(form) %}
+    {% for field in form %}
+        {% if not field.type in ['CSRFTokenField', 'HiddenField'] %}
+            {{ widget(field, class=class, **kwargs) }}
+        {% endif %}
+    {% endfor %}
+    {{ form.hidden_tag() }}
+{% endmacro %}
+
+{% macro form_account(account, form) %}
+    <div
+        ng-controller="account"
+        data-account="{{ account.get_dictionary()|format_dumps }}"
+        >
+        {{ widget(form.group) }}
+        {{ widget(form.description) }}
+        {{ widget(form.blacklist) }}
+        <hr>
+        <div class="control-group">
+            <label class="control-label"><strong>Shortcuts</strong></label>
+            <div class="controls">
+                <div class="btn-group">
+                    <button
+                        class="btn"
+                        ng-repeat="(key, value) in services"
+                        ng-click="update(key)"
+                        type="button"
+                        >
+                        [! key !]
+                    </button>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="control-group">
+            <label class="control-label"></label>
+            <div class="controls">
+                <h5>Incoming Details</h5>
+            </div>
+        </div>
+        {{ widget(form.incoming_hostname, ng_model='account.incoming_hostname') }}
+        {{ widget(form.incoming_port_number, ng_model='account.incoming_port_number') }}
+        {{ widget(form.incoming_use_ssl, ng_model='account.incoming_use_ssl') }}
+        <hr>
+        <div class="control-group">
+            <label class="control-label"></label>
+            <div class="controls">
+                <h5>Outgoing Details</h5>
+            </div>
+        </div>
+        {{ widget(form.outgoing_hostname, ng_model='account.outgoing_hostname') }}
+        {{ widget(form.outgoing_port_number, ng_model='account.outgoing_port_number') }}
+        {{ widget(form.outgoing_use_ssl, ng_model='account.outgoing_use_ssl') }}
+        {{ widget(form.outgoing_use_tls, ng_model='account.outgoing_use_tls') }}
+        <hr>
+        <div class="control-group">
+            <label class="control-label"></label>
+            <div class="controls">
+                <h5>Other Details</h5>
+            </div>
+        </div>
+        {{ widget(form.username, ng_model='account.username') }}
+        {{ widget(form.password) }}
+        <hr>
+        <div class="control-group">
+            <label class="control-label"></label>
+            <div class="controls">
+                <h5>Proxy Details</h5>
+            </div>
+        </div>
+        {{ widget(form.proxy) }}
+        {{ form.hidden_tag() }}
+    </div>
+{% endmacro %}
+
+{% macro form_code(filter_ids, pack_ids, form) %}
+    {{ widget(form.value) }}
+    {{ widget(form.templates) }}
+    {% set items = form.get_items() %}
+    <div ng-controller="code">
+        <div class="control-group required">
+            <label class="control-label">
+                Recipe Pack(s)
+            </label>
+            <div class="controls">
+                {% if items %}
+                    <ul>
+                        {% for pack in items['packs'] %}
+                            <li>
+                                <label>
+                                    <input
+                                        {{ 'checked="checked"' if pack['id'] in pack_ids }}
+                                        name="packs"
+                                        ng-click="click($event);"
+                                        type="checkbox"
+                                        value="{{ pack['id'] }}"
+                                        >
+                                    {{ pack['name'] }}
+                                </label>
+                                {% if pack['filters'] %}
+                                    <ul>
+                                        {% for filter in pack['filters'] %}
+                                            <li>
+                                                <label>
+                                                    <input
+                                                        {{ 'checked="checked"' if filter['id'] in filter_ids }}
+                                                        name="filters"
+                                                        ng-click="click($event);"
+                                                        type="checkbox"
+                                                        value="{{ filter['id'] }}"
+                                                        type="checkbox"
+                                                        >
+                                                    {{ filter['name'] }}
+                                                </label>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+        <div class="control-group required">
+            <label class="control-label">
+                Recipe(s)
+            </label>
+            <div class="controls">
+                {% if items %}
+                    <ul>
+                        {% for filter in items['filters'] %}
+                            <li>
+                                <label>
+                                    <input
+                                        {{ 'checked="checked"' if filter['id'] in filter_ids }}
+                                        name="filters"
+                                        ng-click="click($event);"
+                                        type="checkbox"
+                                        value="{{ filter['id'] }}"
+                                        type="checkbox"
+                                        >
+                                    {{ filter['name'] }}
+                                </label>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {{ form.hidden_tag() }}
+{% endmacro %}
+
+{% macro form_filter(filter, form) %}
+    {{ widget(form.pack) }}
+    {{ widget(form.name) }}
+    {{ widget(form.description) }}
+    {{ widget(form.accounts) }}
+    {{ widget(form.visibility) }}
+    <hr>
+    <div ng-controller="filters">
+        <p>
+            <a
+                class="btn clearfix pull-right"
+                ng-click="status = true;"
+                ng-show="!status"
+                id="schedule"
+                >
+                <i class="icon-cogs"></i>
+                Expand
+            </a>
+            <strong>Schedule:</strong>
+            <a
+                class="btn clearfix pull-right"
+                ng-click="status = false;"
+                ng-show="status"
+                >
+                <i class="icon-cogs"></i>
+                Collapse
+            </a>
+            You may restrict sending to specific days and times by expanding
+            this section and making your selections. Example: Send only
+            between 9:00AM and 5:00PM Monday-Friday. By default, this recipe
+            will not have a time restriction.
+        </p>
+        <div
+            class="schedule"
+            data-days="{{ filter.schedule['days']|format_dumps }}"
+            ng-controller="schedule"
+            ng-show="status"
+            >
+            <table class="table table-hover table-striped">
+                <tr>
+                    <th class="right">Day</th>
+                    <th class="hour" ng-repeat="hour in range(0, 12, 1)">
+                        [! hour > 0 && hour || 12 !]
+                    </th>
+                    <th class="center narrow"></th>
+                </tr>
+                <tr ng-repeat-start="name in names">
+                    <td class="right">
+                        <i
+                            class="icon-random cursor pull-left"
+                            ng-click="invert($index)"
+                            ></i>
+                        <span
+                            class="cursor"
+                            ng-click="toggle($index)"
+                            >[! name !]</span>
+                    </td>
+                    <td
+                        class="hour"
+                        ng-repeat="hour in range(0, 12, 1)"
+                        >
+                        <input
+                            ng-checked="days[$parent.$index].indexOf(hour) !== -1"
+                            ng-click="click($parent.$index, hour)"
+                            type="checkbox"
+                            >
+                    </td>
+                    <td class="center narrow">AM</td>
+                </tr>
+                <tr ng-repeat-end>
+                    <td class="right"></td>
+                    <td
+                        class="hour"
+                        ng-repeat="hour in range(12, 24, 1)"
+                        >
+                        <input
+                            ng-checked="days[$parent.$index].indexOf(hour) !== -1"
+                            ng-click="click($parent.$index, hour)"
+                            type="checkbox"
+                            >
+                    </td>
+                    <td class="center narrow">PM</td>
+                </tr>
+            </table>
+            {#
+                <div
+                    class="control-group required"
+                    ng-repeat="name in names"
+                    >
+                    {% strip %}
+                        <label class="control-label">
+                            <span ng-click="toggle($index)">[! name !]</span>
+                            <br>
+                            <i
+                                class="icon-plus-sign cursor"
+                                ng-click="enable($index)"
+                                ></i>
+                            {{ ' ' }}
+                            <i
+                                class="icon-minus-sign cursor"
+                                ng-click="disable($index)"
+                                ></i>
+                        </label>
+                    {% endstrip %}
+                    <div class="controls">
+                        <div class="btn-group" data-toggle="buttons-checkbox">
+                            <button
+                                class="btn [! days[$parent.$index].indexOf(hour) !== -1 && 'btn-success active' || 'btn-danger' !]"
+                                data-toggle="button"
+                                ng-click="click($parent.$index, hour)"
+                                ng-repeat="hour in range(0, 12, 1)"
+                                type="button"
+                                >
+                                [! hour > 0 && hour || 12 !] AM
+                            </button>
+                        </div>
+                        <div class="btn-group" data-toggle="buttons-checkbox">
+                            <button
+                                class="btn [! days[$parent.$index].indexOf(hour) !== -1 && 'btn-success active' || 'btn-danger' !]"
+                                data-toggle="button"
+                                ng-click="click($parent.$index, hour)"
+                                ng-repeat="hour in range(12, 24, 1)"
+                                type="button"
+                                >
+                                [! hour - 12 > 0 && hour - 12 || hour !] PM
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            #}
+            <p>
+                You may toggle an entire day by clicking the day you wish to
+                change. Pressing the "Invert" button will invert the currently
+                selected times for the day.
+            </p>
+            <p ng-show="get_hours() == 168 || get_hours() == 0">
+                This recipe currently has no schedule restrictions.
+            </p>
+            <p ng-hide="get_hours() == 168 || get_hours() == 0">
+                This recipe is scheduled to send during the following
+                days/times:
+                <span ng-repeat="name in names">
+                    <br>
+                    <strong>[! name !]</strong>: [! get_string($index) !]
+                </span>
+            </p>
+            {{ form.schedule_days }}
+            {{ widget(form.schedule_timezone) }}
+        </div>
+    </div>
+    <hr>
+    <div class="control-group">
+        <label class="control-label"></label>
+        <div class="controls">
+            <h5>Conditions</h5>
+        </div>
+    </div>
+    <p>
+        By default, all email sent to the accounts specified in this filter
+        will trigger the template(s) associated with it. To add required
+        conditions for this filter simply press the "Add Condition" button
+        and specify accordingly. Conditions are checked from top to bottom
+        and the filter will trigger when any condition is met.
+    </p>
+    <div
+        data-conditions="{{ filter.conditions|format_dumps }}"
+        ng-controller="conditions"
+        >
+        <p class="center" ng-show="!status">
+            <a class="btn" ng-click="status = true" id="conditions">
+                Add Condition
+            </a>
+        </p>
+        <div class="control-group" ng-show="status">
+            <label class="control-label">
+                <i class="icon-plus-sign cursor" ng-click="add()"></i>
+                <strong>Conditions</strong>
+            </label>
+            <div class="controls">
+                <div
+                    class="conditions clearfix"
+                    ng-repeat="condition in conditions"
+                    >
+                    <select class="pull-left" name="operand_1">
+                        <option
+                            ng-repeat="item in operand_1"
+                            ng-selected="item == condition.operand_1"
+                            value="[! item !]">
+                            [! item !]
+                        </option>
+                    </select>
+                    <select class="pull-left" name="operator">
+                        <option
+                            ng-repeat="item in operator"
+                            ng-selected="item == condition.operator"
+                            value="[! item !]">
+                            [! item !]
+                        </option>
+                    </select>
+                    <input
+                        class="pull-left"
+                        name="operand_2"
+                        type="text"
+                        value="[! condition.operand_2 !]"
+                        >
+                    <i
+                        class="icon-asterisk cursor"
+                        ng-click="profanity(condition)"
+                        title="Clicking this will insert the {{ '{{' }} profanity {{ '}}' }} condition. This will check against all words in your profanity list (located in the Settings page)."
+                        ></i>
+                    <i
+                        class="icon-remove-sign cursor"
+                        ng-click="delete(condition)"
+                        ></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div
+        data-accounts="{{ accounts|format_dumps }}"
+        data-steps="{{ filter.steps|format_dumps }}"
+        data-templates="{{ templates|format_dumps }}"
+        ng-controller="steps"
+        >
+        <div class="control-group">
+            <label class="control-label" ng-click="add()">
+                <i class="icon-plus-sign cursor" id="steps"></i>
+                <strong>Steps</strong>
+            </label>
+            <ul class="nav nav-tabs">
+                <li
+                    class="steps [! $index == 0 && 'active' || '' !]"
+                    ng-repeat="step in steps"
+                    >
+                    <a
+                        href="#tab_[! $index + 1 !]"
+                        data-toggle="tab"
+                        >Step [! $index + 1 !]
+                    <i
+                        class="icon-remove-sign cursor"
+                        ng-click="delete(step)"
+                        ng-hide="$index == 0"
+                        ></i>
+                    </a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div
+                    class="tab-pane [! $index == 0 && 'active' || '' !]"
+                    id="tab_[! $index + 1 !]"
+                    ng-repeat="step in steps"
+                    >
+                    <div class="control-group" ng-show="$index == 0">
+                        <label class="control-label">&nbsp;</label>
+                        <div class="controls">
+                            <p>
+                                The first step in each recipe must be set
+                                to trigger on the first email arriving and
+                                without a wait between the first and most
+                                recent email (due it being the first
+                                received). We have set these fields to the
+                                appropriate values. You may adjust them in
+                                any additional steps beyond the first.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="control-group required">
+                        <label
+                            class="control-label"
+                            for="number_of_emails_[! $index + 1 !]"
+                            >No. of Emails</label>
+                        <div class="controls">
+                            <input
+                                class="wide-input"
+                                id="number_of_emails_[! $index + 1 !]"
+                                name="number_of_emails"
+                                ng-disabled="$index == 0"
+                                ng-model="step.number_of_emails"
+                                type="text"
+                                >
+                            <span class="help-block">
+                                <i class="icon-info-sign"></i>
+                                ...after at least this many emails.
+                            </span>
+                        </div>
+                    </div>
+                    <div class="control-group required">
+                        <label
+                            class="control-label"
+                            for="number_of_days_[! $index + 1 !]"
+                            >No. of Days</label>
+                        <div class="controls">
+                            <input
+                                class="wide-input"
+                                id="number_of_days_[! $index + 1 !]"
+                                name="number_of_days"
+                                ng-disabled="$index == 0"
+                                ng-model="step.number_of_days"
+                                type="text"
+                                >
+                            <span class="help-block">
+                                <i class="icon-info-sign"></i>
+                                ...after at least this many days.
+                            </span>
+                        </div>
+                    </div>
+                    <div ng-controller="attachments">
+                        <div class="control-group">
+                            <label class="control-label">
+                                <i
+                                    class="icon-plus-sign cursor"
+                                    ng-click="add()"
+                                    ></i>
+                                Attachments
+                            </label>
+                            <div class="controls">
+                                <div
+                                    class="attachments clearfix"
+                                    ng-repeat="attachment in attachments"
+                                    >
+                                    <select
+                                        class="pull-left"
+                                        ng-model="attachment.operand_1"
+                                        >
+                                        <option
+                                            ng-repeat="item in operand_1"
+                                            ng-selected="item == attachment.operand_1"
+                                            value="[! item !]"
+                                            >
+                                            [! item !]
+                                        </option>
+                                    </select>
+                                    <select
+                                        class="pull-left"
+                                        ng-model="attachment.operator"
+                                        >
+                                        <option
+                                            ng-repeat="item in operator"
+                                            ng-selected="item == attachment.operator"
+                                            value="[! item !]"
+                                            >
+                                            [! item !]
+                                        </option>
+                                    </select>
+                                    <input
+                                        class="pull-left"
+                                        ng-model="attachment.operand_2"
+                                        type="text"
+                                        value="[! attachment.operand_2 !]"
+                                        >
+                                    <i
+                                        class="icon-keyboard cursor"
+                                        ng-show="attachment.operand_1 == 'Size'"
+                                        ng-click="open($index)"
+                                        ></i>
+                                    <i
+                                        class="icon-remove-sign cursor"
+                                        ng-click="delete(attachment)"
+                                        ></i>
+                                </div>
+                                <span
+                                    class="help-block"
+                                    ng-hide="attachments.length"
+                                    >
+                                    <i class="icon-info-sign"></i>
+                                    If you'd like to apply filters based on
+                                    attachments in mail received, use this
+                                    feature by pressing the "+".
+                                </span>
+                                <span
+                                    class="help-block"
+                                    ng-show="attachments.length"
+                                    >
+                                    <i class="icon-info-sign"></i>
+                                    Reference: Matrix (see below)
+                                </span>
+                                <span
+                                    class="help-block"
+                                    ng-show="attachments.length"
+                                    >
+                                    <i class="icon-info-sign"></i>
+                                    Extension: must not include the preceeding dot (.) character.
+                                </span>
+                                <span
+                                    class="help-block"
+                                    ng-show="attachments.length"
+                                    >
+                                    <i class="icon-info-sign"></i>
+                                    Size: must be specified in bytes. Note: To
+                                    calculate the size in bytes, press the
+                                    calculator icon in the size field when size
+                                    has been selected.
+                                </span>
+                                <input name="attachments" type="hidden">
+                            </div>
+                        </div>
+                        <div class="modal fade hide calculator">
+                            <div class="modal-header">
+                                <button
+                                    aria-hidden="true"
+                                    class="close"
+                                    data-dismiss="modal"
+                                    type="button"
+                                    >&times;</button>
+                                <h3>Calculator</h3>
+                            </div>
+                            <div class="modal-body">
+                                <p>
+                                    <input
+                                        ng-model="quantity"
+                                        type="text"
+                                        value="quantity"
+                                        >
+                                    <select ng-model="quality">
+                                        <option
+                                            ng-repeat="item in qualities"
+                                            ng-selected="item == quality"
+                                            value="[! item !]"
+                                            >
+                                            [! item !]
+                                        </option>
+                                    </select>
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <a
+                                    class="btn btn-danger pull-right"
+                                    data-dismiss="modal"
+                                    >Close</a>
+                                <a
+                                    class="btn btn-primary pull-left"
+                                    ng-click="close()"
+                                    >Save</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Templates</label>
+                        <div class="controls">
+                            <ul>
+                                <li>
+                                    <label
+                                        ng-repeat="template in templates"
+                                        >
+                                        <input
+                                            ng-checked="step.templates.indexOf(template[0]) != -1"
+                                            name="templates_[! $parent.$index !]"
+                                            type="checkbox"
+                                            value="[! template[0] !]"
+                                            >
+                                        [! template[1] !]
+                                    </label>
+                                </li>
+                            </ul>
+                            <span class="help-block">
+                                <i class="icon-info-sign"></i>
+                                If you select more than one, one of
+                                them will be chosen in random.
+                            </span>
+                        </div>
+                    </div>
+                    <div class="control-group required">
+                        <label
+                            class="control-label"
+                            for="delay_quantity_[! $index + 1 !]"
+                            >Delay</label>
+                        <div class="controls">
+                            <input
+                                class="delay-quantity"
+                                id="delay_quantity_[! $index + 1 !]"
+                                name="delay_quantity"
+                                ng-model="step.delay_quantity"
+                                type="text"
+                                >
+                            <select
+                                class="delay-unit pull-right"
+                                ng-model="step.delay_unit"
+                                ng-options="delay_unit as delay_unit for delay_unit in delay_units"
+                                >
+                            </select>
+                            <input
+                                name="delay_unit"
+                                type="hidden"
+                                value="[! step.delay_unit !]"
+                                >
+                            <span class="help-block">
+                                <i class="icon-info-sign"></i>
+                                This is the minimum amount of time
+                                after which an email will be replied
+                                to.
+                            </span>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label
+                            class="control-label"
+                            for="account_[! $index + 1 !]"
+                            >
+                            Account
+                        </label>
+                        <div class="controls">
+                            <select
+                                class="wide-select"
+                                id="account_[! $index + 1 !]"
+                                ng-model="step.account"
+                                ng-options="account[0] as account[1] for account in accounts"
+                                >
+                            </select>
+                            <input
+                                name="account"
+                                type="hidden"
+                                value="[! step.account !]"
+                                >
+                            <span class="help-block">
+                                <i class="icon-info-sign"></i>
+                                All the emails matching this recipe
+                                will be replied to from the account
+                                that you select here. If you do not
+                                select any account, the original
+                                account will be used.
+                            </span>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label
+                            class="control-label"
+                            for="reply_to_name_[! $index + 1 !]"
+                            >Reply To/Name</label>
+                        <div class="controls">
+                            <input
+                                class="wide-input"
+                                id="reply_to_name_[! $index + 1 !]"
+                                name="reply_to_name"
+                                ng-model="step.reply_to_name"
+                                type="text"
+                                >
+                            <span class="help-block">
+                                <i class="icon-info-sign"></i>
+                                Only to be used if you wish to change what is
+                                displayed by your email account.
+                            </span>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label
+                            class="control-label"
+                            for="reply_to_email_[! $index + 1 !]"
+                            >Reply To/Email</label>
+                        <div class="controls">
+                            <input
+                                class="wide-input"
+                                id="reply_to_email_[! $index + 1 !]"
+                                name="reply_to_email"
+                                ng-model="step.reply_to_email"
+                                type="text"
+                                >
+                            <span class="help-block">
+                                <i class="icon-info-sign"></i>
+                                Only to be used if you wish to change what is
+                                displayed by your email account.
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <p><strong>Summary:</strong></p>
+        <ul>
+            <li ng-repeat="step in steps">
+                <strong>Step [! $index + 1 !]:</strong>
+                <span ng-hide="$index == 0">
+                    <br>
+                    If <em>No. of Emails</em> since
+                    <em>Step [! $index !]</em> is at least
+                    <em>[! step.number_of_emails !]</em> and
+                    <em>No. of Days</em> since <em>Step [! $index !]</em>
+                    is at least <em>[! step.number_of_days !]</em>:
+                </span>
+                <br>
+                Reply after a delay of <em>[! step.delay_quantity !]
+                [! step.delay_unit !]</em> using
+                <em>[! get_template($index) !]</em> via
+                <em>[! get_account($index) !].</em>
+            </li>
+        </ul>
+        <hr>
+        <p><strong>Matrix:</strong></p>
+        <table class="table table-hover table-striped">
+            <tr>
+                <th>Operator</th>
+                <th class="narrow center">Name</th>
+                <th class="narrow center">Extension</th>
+                <th class="narrow center">Count</th>
+                <th class="narrow center">Size</th>
+            </tr>
+            <tr>
+                <td>is</td>
+                <td class="narrow center"><i class="icon-check-sign"></i></td>
+                <td class="narrow center"><i class="icon-check-sign"></i></td>
+                <td class="narrow center"><i class="icon-check-empty"></i></td>
+                <td class="narrow center"><i class="icon-check-empty"></i></td>
+            </tr>
+            <tr>
+                <td>contains</td>
+                <td class="narrow center"><i class="icon-check-sign"></i></td>
+                <td class="narrow center"><i class="icon-check-sign"></i></td>
+                <td class="narrow center"><i class="icon-check-empty"></i></td>
+                <td class="narrow center"><i class="icon-check-empty"></i></td>
+            </tr>
+            <tr>
+                <td>does not contain</td>
+                <td class="narrow center"><i class="icon-check-sign"></i></td>
+                <td class="narrow center"><i class="icon-check-sign"></i></td>
+                <td class="narrow center"><i class="icon-check-empty"></i></td>
+                <td class="narrow center"><i class="icon-check-empty"></i></td>
+            </tr>
+            <tr>
+                <td>has all these words</td>
+                <td class="narrow center"><i class="icon-check-sign"></i></td>
+                <td class="narrow center"><i class="icon-check-sign"></i></td>
+                <td class="narrow center"><i class="icon-check-empty"></i></td>
+                <td class="narrow center"><i class="icon-check-empty"></i></td>
+            </tr>
+            <tr>
+                <td>has atleast one of these words</td>
+                <td class="narrow center"><i class="icon-check-sign"></i></td>
+                <td class="narrow center"><i class="icon-check-sign"></i></td>
+                <td class="narrow center"><i class="icon-check-empty"></i></td>
+                <td class="narrow center"><i class="icon-check-empty"></i></td>
+            </tr>
+            <tr>
+                <td>has none of these words</td>
+                <td class="narrow center"><i class="icon-check-sign"></i></td>
+                <td class="narrow center"><i class="icon-check-sign"></i></td>
+                <td class="narrow center"><i class="icon-check-empty"></i></td>
+                <td class="narrow center"><i class="icon-check-empty"></i></td>
+            </tr>
+            <tr>
+                <td>is greater than</td>
+                <td class="narrow center"><i class="icon-check-empty"></i></td>
+                <td class="narrow center"><i class="icon-check-empty"></i></td>
+                <td class="narrow center"><i class="icon-check-sign"></i></td>
+                <td class="narrow center"><i class="icon-check-sign"></i></td>
+            </tr>
+            <tr>
+                <td>is equal to</td>
+                <td class="narrow center"><i class="icon-check-empty"></i></td>
+                <td class="narrow center"><i class="icon-check-empty"></i></td>
+                <td class="narrow center"><i class="icon-check-sign"></i></td>
+                <td class="narrow center"><i class="icon-check-sign"></i></td>
+            </tr>
+            <tr>
+                <td>is lesser than</td>
+                <td class="narrow center"><i class="icon-check-empty"></i></td>
+                <td class="narrow center"><i class="icon-check-empty"></i></td>
+                <td class="narrow center"><i class="icon-check-sign"></i></td>
+                <td class="narrow center"><i class="icon-check-sign"></i></td>
+            </tr>
+            <tr>
+                <td>is not greater than</td>
+                <td class="narrow center"><i class="icon-check-empty"></i></td>
+                <td class="narrow center"><i class="icon-check-empty"></i></td>
+                <td class="narrow center"><i class="icon-check-sign"></i></td>
+                <td class="narrow center"><i class="icon-check-sign"></i></td>
+            </tr>
+            <tr>
+                <td>is not equal to</td>
+                <td class="narrow center"><i class="icon-check-empty"></i></td>
+                <td class="narrow center"><i class="icon-check-empty"></i></td>
+                <td class="narrow center"><i class="icon-check-sign"></i></td>
+                <td class="narrow center"><i class="icon-check-sign"></i></td>
+            </tr>
+            <tr>
+                <td>is not lesser than</td>
+                <td class="narrow center"><i class="icon-check-empty"></i></td>
+                <td class="narrow center"><i class="icon-check-empty"></i></td>
+                <td class="narrow center"><i class="icon-check-sign"></i></td>
+                <td class="narrow center"><i class="icon-check-sign"></i></td>
+            </tr>
+        </table>
+    </div>
+    {{ form.hidden_tag() }}
+{% endmacro %}
+
+{% macro form_placeholders() %}
+    <hr>
+    <div class="page-header">
+        <h1>Place Holders:</h1>
+    </div>
+    <table class="table table-hover table-striped">
+        <tr>
+            <th colspan="2">Run-Time Place Holders</th>
+        </tr>
+        <tr>
+            <td class="narrow">
+                <span class="monospace">
+                    {{ '{{' }} incoming_hostname {{ '}}' }}
+                </span>
+            </td>
+            <td>Incoming Hostname</td>
+        </tr>
+        <tr>
+            <td class="narrow">
+                <span class="monospace">
+                    {{ '{{' }} outgoing_hostname {{ '}}' }}
+                </span>
+            </td>
+            <td>Outgoing Hostname</td>
+        </tr>
+        <tr>
+            <td class="narrow">
+                <span class="monospace">{{ '{{' }} source_email {{ '}}' }}</span>
+            </td>
+            <td>Source Email</td>
+        </tr>
+        <tr>
+            <td class="narrow">
+                <span class="monospace">{{ '{{' }} target_name {{ '}}' }}</span>
+            </td>
+            <td>Target Name</td>
+        </tr>
+        <tr>
+            <td class="narrow">
+                <span class="monospace">{{ '{{' }} target_email {{ '}}' }}</span>
+            </td>
+            <td>Target Email</td>
+        </tr>
+        <tr>
+            <td class="narrow">
+                <span class="monospace">{{ '{{' }} subject {{ '}}' }}</span>
+            </td>
+            <td>Subject</td>
+        </tr>
+        <tr>
+            <td class="narrow">
+                <span class="monospace">{{ '{{' }} body {{ '}}' }}</span>
+            </td>
+            <td>Body</td>
+        </tr>
+        <tr>
+            <td class="narrow">
+                <span class="monospace">{{ '{{' }} Greetings {{ '}}' }}</span>
+            </td>
+            <td>
+                Greetings
+                (Morning, Afternoon, Evening; depending on the time of the day)
+            </td>
+        </tr>
+        <tr>
+            <td class="narrow">
+                <span class="monospace">{{ '{{' }} greetings {{ '}}' }}</span>
+            </td>
+            <td>
+                Greetings
+                (morning, afternoon, evening; depending on the time of the day)
+            </td>
+        </tr>
+        <tr>
+            <td class="narrow">
+                <span class="monospace">{{ '{{' }} year {{ '}}' }}</span>
+            </td>
+            <td>{{ g.year }}, etc.</td>
+        </tr>
+        <tr>
+            <td class="narrow">
+                <span class="monospace">{{ '{{' }} Month {{ '}}' }}</span>
+            </td>
+            <td>January, February, March, etc.</td>
+        </tr>
+        <tr>
+            <td class="narrow">
+                <span class="monospace">{{ '{{' }} month {{ '}}' }}</span>
+            </td>
+            <td>january, february, march, etc.</td>
+        </tr>
+        <tr>
+            <td class="narrow">
+                <span class="monospace">{{ '{{' }} Day {{ '}}' }}</span>
+            </td>
+            <td>Monday, Tuesday, Wednesday, etc.</td>
+        </tr>
+        <tr>
+            <td class="narrow">
+                <span class="monospace">{{ '{{' }} day {{ '}}' }}</span>
+            </td>
+            <td>monday, tuesday, wednesday, etc.</td>
+        </tr>
+        <tr>
+            <td class="narrow">
+                <span class="monospace">{{ '{{' }} yesterday {{ '}}' }}</span>
+            </td>
+            <td>{{ yesterday|format_date }}, etc.</td>
+        </tr>
+        <tr>
+            <td class="narrow">
+                <span class="monospace">{{ '{{' }} today {{ '}}' }}</span>
+            </td>
+            <td>{{ today|format_date }}, etc.</td>
+        </tr>
+        <tr>
+            <td class="narrow">
+                <span class="monospace">{{ '{{' }} tomorrow {{ '}}' }}</span>
+            </td>
+            <td>{{ tomorrow|format_date }}, etc.</td>
+        </tr>
+        {% if g.user %}
+            {% set variables = g.user.variables.all() %}
+            {% if variables %}
+                <tr>
+                    <th colspan="2">Variable Place Holders</th>
+                </tr>
+                {% for variable in variables %}
+                <tr>
+                    <td class="narrow">
+                        <span class="monospace">
+                            {{ '{{' }} {{ variable.key }} {{ '}}' }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="monospace">{{ variable.value }}</span>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+        <tr>
+            <th colspan="2">Computed Place Holders</th>
+        </tr>
+        <tr>
+            <td class="narrow">
+                <span class="monospace">
+                    {{ '{{' }} alphabets|N {{ '}}' }}
+                </span>
+            </td>
+            <td>
+                A sequence of N random alphabets (N must be a valid number)
+            </td>
+        </tr>
+        <tr>
+            <td class="narrow">
+                <span class="monospace">
+                    {{ '{{' }} numbers|N {{ '}}' }}
+                </span>
+            </td>
+            <td>
+                A sequence of N random numbers (N must be a valid number)
+            </td>
+        </tr>
+        <tr>
+            <td class="narrow">
+                <span class="monospace">
+                    {{ '{{' }} A|B {{ '}}' }}
+                </span>
+            </td>
+            <td>
+                A random number between A and B (inclusive)
+                (A and B must be a valid numbers)
+            </td>
+        </tr>
+        <tr>
+            <td class="narrow">
+                <span class="monospace">
+                    {{ '{{' }} word 1|word 2|...|word N {{ '}}' }}
+                </span>
+            </td>
+            <td>
+                A random word (either "word 1" or "word 2" or ... or "word N").
+            </td>
+        </tr>
+    </table>
+{% endmacro %}
+
+{% macro form_template(form, attachments) %}
+    {{ widget(form.name) }}
+    {{ widget(form.cc) }}
+    {{ widget(form.bcc) }}
+    {{ widget(form.subject) }}
+    {{ widget(form.bodies_plain_text) }}
+    {{ widget(form.bodies_html) }}
+    <div ng-controller="template">
+        {% if attachments %}
+            <div class="control-group">
+                <label class="control-label">
+                    Attachment(s)
+                </label>
+                <div class="controls">
+                    <ul>
+                        {% for attachment in attachments %}
+                            <li>
+                                <label>
+                                    <input
+                                        name="attachments[delete]"
+                                        type="checkbox"
+                                        value="{{ attachment['name'] }}"
+                                        >
+                                        <i class="icon-{{ attachment['class'] }}">
+                                        </i>
+                                        <strong>{{ attachment['name'] }}</strong>
+                                        {{ attachment['size']|format_float }} KB
+                                </label>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="controls">
+                    <span class="help-block">
+                        <i class="icon-info-sign"></i>
+                        Please check the attachments that you wish to remove.
+                     </span>
+                </div>
+            </div>
+        {% endif %}
+        <div class="control-group">
+            <label class="control-label">
+                <i class="icon-plus-sign" ng-click="add()"></i>
+                Attachment(s)
+            </label>
+            <div class="controls" ng-repeat="(key, value) in items">
+                <input name="attachments[add]" type="file" filestyle>
+                <i class="icon-remove-sign cursor" ng-click="delete(key)"></i>
+            </div>
+        </div>
+        {{ form.hidden_tag() }}
+    </div>
+{% endmacro %}
+
+{% macro form_variable(form) %}
+    {{ widget(form.key, placeholder='hours') }}
+    {{ widget(form.value, placeholder='Mon-Fri 9:00AM - 5:00PM and we\'re closed on weekends') }}
+    {{ form.hidden_tag() }}
+{% endmacro %}
+
+{% macro overview() %}
+    <div class="fade hide modal overview">
+        <div class="modal-header">
+            <button
+                class="close"
+                type="button"
+                aria-hidden="true"
+                ng-click="close()"
+                >&times;</button>
+            <h3>
+                <i class="icon-user"></i>
+                Are you sure?
+            </h3>
+        </div>
+        <div class="modal-body">
+            <p>
+                Are you sure you'd like to delete the following [! caption !]?
+            </p>
+            <ul>
+                <li ng-repeat="item in items">[! item !]</li>
+            </ul>
+        </div>
+        <div class="modal-footer">
+            <a
+                class="btn btn-danger pull-right"
+                data-dismiss="modal"
+                >No</a>
+            <a
+                class="btn btn-primary pull-left"
+                ng-click="process($event, true)"
+                >Yes</a>
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro pagination(route, pager) %}
+    <div class="pagination">
+        <span class="pull-left">
+            Showing
+            {{ pager.first|format_integer }}
+            to
+            {{ pager.last|format_integer }}
+            of
+            {{ pager.count|format_integer }}
+            items
+        </span>
+        <span class="pull-right">
+            Per Page
+            <ul>
+                {% for limit in [10, 20, 30, 40, 50] %}
+                    <li class="{{ 'active' if limit == pager.limit else '' }}">
+                        <a href="{{ url_for(route['name'], limit=limit, **route['options']) }}">
+                            <span>{{ limit }}</span>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </span>
+        <ul>
+            <li class="{{ 'disabled' if pager.page == 1 else '' }}">
+                <a href="{{ url_for(route['name'], page=1, **route['options']) }}">
+                    <span>&laquo;</span>
+                </a>
+            </li>
+            <li class="{{ 'disabled' if pager.page == 1 else '' }}">
+                <a href="{{ url_for(route['name'], page=pager.previous, **route['options']) }}">
+                    <span>&lt;</span>
+                </a>
+            </li>
+            {% for page in pager.get_pages(2) %}
+                <li class="{{ 'active' if page == pager.page else '' }}">
+                    <a href="{{ url_for(route['name'], page=page, **route['options']) }}">
+                        <span>{{ page|format_integer }}</span>
+                    </a>
+                </li>
+            {% endfor %}
+            <li class="{{ 'disabled' if pager.page == pager.pages else '' }}">
+                <a href="{{ url_for(route['name'], page=pager.next, **route['options']) }}">
+                    <span>&gt;</span>
+                </a>
+            </li>
+            <li class="{{ 'disabled' if pager.page == pager.pages else '' }}">
+                <a href="{{ url_for(route['name'], page=pager.pages, **route['options']) }}">
+                    <span>&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+{% endmacro %}
+
+{% macro th(route, order_by, key, value, class) %}
+    {% set direction = ('desc' if order_by['direction'] == 'asc' else 'asc' if order_by['column'] == key else 'asc') %}
+    <th class="{{ class }} {{ 'sort' if order_by['column'] == key else '' }}">
+        <a href="{{ url_for(route['name'], order_by_column=key, order_by_direction=direction, **route['options']) }}">
+            {{ value }}
+        </a>
+        {% if order_by['column'] == key %}
+            <i class="{{ 'icon-sort-by-attributes-alt' if direction == 'asc' else 'icon-sort-by-attributes' }}">
+            </i>
+        {% endif %}
+    </th>
+{% endmacro %}
+
+{% macro widget(field) %}
+    {% set class = [] %}
+    {% if field.flags.required %}
+        {% do class.append('required') %}
+    {% endif %}
+    {% if field.errors|length %}
+        {% do class.append('error') %}
+    {% endif %}
+    <div class="control-group {{ class|join(' ') }}">
+        <label class="control-label" for="{{ field.label.field_id}}">
+            {{ field.label.text }}
+        </label>
+        <div class="controls">
+            {% set class = [] %}
+            {% if 'class' in kwargs and kwargs['class'] %}
+                {% do class.append(kwargs['class']) %}
+            {% endif %}
+            {% if field.type in [
+                'IntegerField',
+                'PasswordField',
+                'TextField',
+                'daterangepicker',
+            ] %}
+                {% do class.append('wide-input') %}
+            {% endif %}
+            {% if field.type in [
+                'QuerySelectField',
+                'SelectField',
+            ] %}
+                {% do class.append('wide-select') %}
+            {% endif %}
+            {% if field.type in [
+                'TextAreaField',
+                'wysihtml5',
+            ] %}
+                {% do class.append('wide-textarea') %}
+            {% endif %}
+            {% do kwargs.update(class=class|join(' ')) %}
+            {% if field.type == 'daterangepicker' %}
+                <div class="date input-append" daterangepicker>
+                    {{ field(**kwargs)|safe }}
+                    <span class="add-on">
+                        <i class="icon-calendar"></i>
+                    </span>
+                </div>
+            {% elif field.type == 'wysihtml5' %}
+                {{ field(wysihtml5=true, **kwargs)|safe }}
+            {% else %}
+                {{ field(**kwargs)|safe }}
+            {% endif %}
+            {% if field.description %}
+                {% for line in field.description %}
+                    <span class="help-block">
+                        <i class="icon-info-sign"></i>
+                        {{ line }}
+                     </span>
+                {% endfor %}
+            {% endif %}
+            {% for error in field.errors %}
+                <span class="help-block">
+                    <i class="icon-warning-sign"></i>
+                    {{ error }}
+                </span>
+            {% endfor %}
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro videos(key) %}
+    {% if not g.mahendra and g.settings['videos_' + key]|length %}
+        <div ng-controller="videos">
+            <a
+                class="btn pull-right"
+                ng-click="open()"
+                >
+                <span class="icon-facetime-video"></span>
+            </a>
+            <div class="fade hide modal videos">
+                <div class="modal-header">
+                    <button
+                        class="close"
+                        type="button"
+                        aria-hidden="true"
+                        ng-click="close()"
+                        >&times;</button>
+                    <h3>
+                        <i class="icon-user"></i>
+                        Videos
+                    </h3>
+                </div>
+                <div class="modal-body">
+                    {% for video in g.settings['videos_' + key] %}
+                        <p>
+                            <video
+                                controls
+                                height="315"
+                                src="{{ video }}"
+                                width="560"
+                                ></video>
+                        </p>
+                        {% if not loop.last %}
+                            <hr>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="modal-footer">
+                    <a
+                        class="btn btn-success"
+                        ng-click="close()"
+                        >Close</a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endmacro %}

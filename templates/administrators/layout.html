@@ -1,0 +1,231 @@
+{% import 'macros.html' as macros with context %}
+
+<!doctype html>
+<html lang="en" ng-app="application">
+    <head>
+        <link
+            href="{{ url_for('static', filename='images/favicon.ico') }}"
+            rel="shortcut icon"
+            >
+        {% assets "stylesheets" %}
+            <link href="{{ ASSET_URL }}" rel="stylesheet" type="text/css">
+        {% endassets %}
+        <meta charset="utf-8">
+        <title>{{ title }} - Administrators - mailsidekick.com</title>
+    </head>
+    <body>
+        <div class="container">
+            <div class="row-fluid">
+                <div class="span12 top">
+                    <p class="clearfix">
+                        <a
+                            class="one pull-left"
+                            href="{{ url_for('administrators.dashboard') }}"
+                            >
+                            <img src="{{ url_for('static', filename='images/1.png')}}">
+                        </a>
+                        <a
+                            class="two pull-left"
+                            href="{{ url_for('administrators.dashboard') }}"
+                            >
+                            <img src="{{ url_for('static', filename='images/2.png')}}">
+                        </a>
+                    </p>
+                    {% if g.administrator %}
+                        <div class="dropdown">
+                            <strong
+                                class="cursor dropdown-toggle"
+                                data-hover="dropdown"
+                                data-toggle="dropdown"
+                                >
+                                {{ g.administrator.name }}
+                                <i class="caret"></i>
+                            </strong>
+                            <ul class="dropdown-menu pull-right">
+                                <li>
+                                    <a href="{{ url_for('administrators.dashboard') }}">
+                                        <i class="icon-home"></i>
+                                        Dashboard
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ url_for('administrators.profile') }}">
+                                        <i class="icon-user"></i>
+                                        Profile
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ url_for('administrators.sign_out') }}">
+                                        <i class="icon-signout"></i>
+                                        Sign Out
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span12">
+                    <div class="navbar">
+                        <div class="navbar-inner">
+                            <ul class="nav">
+                                {% if g.administrator %}
+                                    <li class="dropdown {{ 'active' if navbar == 'administrators' else '' }}">
+                                        <a
+                                            data-hover="dropdown"
+                                            href="{{ url_for('administrators.administrators_overview') }}"
+                                            >
+                                            <i class="icon-user"></i>
+                                            Administrators
+                                        </a>
+                                        <i
+                                            class="caret icon-caret-down dropdown-toggle"
+                                            data-hover="dropdown"
+                                            data-toggle="dropdown"
+                                            ></i>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a href="{{ url_for('administrators.administrators_add') }}">
+                                                    <i class="icon-plus-sign">
+                                                    </i>
+                                                    Add New
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li class="dropdown {{ 'active' if navbar == 'users' else '' }}">
+                                        <a href="{{ url_for('administrators.users_overview') }}">
+                                            <i class="icon-user"></i>
+                                            Users
+                                        </a>
+                                    </li>
+                                    <li class="dropdown {{ 'active' if navbar == 'articles' else '' }}">
+                                        <a
+                                            data-hover="dropdown"
+                                            href="{{ url_for('administrators.articles_overview') }}"
+                                            >
+                                            <i class="icon-file-text"></i>
+                                            Articles
+                                        </a>
+                                        <i
+                                            class="caret icon-caret-down dropdown-toggle"
+                                            data-hover="dropdown"
+                                            data-toggle="dropdown"
+                                            ></i>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a href="{{ url_for('administrators.articles_add') }}">
+                                                    <i class="icon-plus-sign"></i>
+                                                    Add New
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li class="dropdown {{ 'active' if navbar == 'redeemables' else '' }}">
+                                        <a
+                                            data-hover="dropdown"
+                                            href="{{ url_for('administrators.templates_overview') }}"
+                                            >
+                                            <i class="icon-th-large"></i>
+                                            Redeemables
+                                        </a>
+                                        <i
+                                            class="caret icon-caret-down dropdown-toggle"
+                                            data-hover="dropdown"
+                                            data-toggle="dropdown"
+                                            ></i>
+                                        <ul class="dropdown-menu">
+                                            <li class="dropdown-submenu">
+                                                <a href="{{ url_for('administrators.templates_overview') }}">
+                                                    <i class="icon-th-large">
+                                                    </i>
+                                                    Email Templates
+                                                </a>
+                                                <ul class="dropdown-menu">
+                                                    <li>
+                                                        <a href="{{ url_for('administrators.templates_add') }}">
+                                                            <i class="icon-plus-sign">
+                                                            </i>
+                                                            Add New
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li class="dropdown-submenu">
+                                                <a href="{{ url_for('administrators.packs_overview') }}">
+                                                    <i class="icon-list-alt">
+                                                    </i>
+                                                    Recipe Packs
+                                                </a>
+                                                <ul class="dropdown-menu">
+                                                    <li>
+                                                        <a href="{{ url_for('administrators.packs_add') }}">
+                                                            <i class="icon-plus-sign">
+                                                            </i>
+                                                            Add New
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li class="dropdown-submenu">
+                                                <a href="{{ url_for('administrators.filters_overview') }}">
+                                                    <i class="icon-filter">
+                                                    </i>
+                                                    Recipes
+                                                </a>
+                                                <ul class="dropdown-menu">
+                                                    <li>
+                                                        <a href="{{ url_for('administrators.filters_add') }}">
+                                                            <i class="icon-plus-sign"></i>
+                                                            Add New
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li class="dropdown-submenu">
+                                                <a href="{{ url_for('administrators.codes_overview') }}">
+                                                    <i class="icon-cogs"></i>
+                                                    Codes
+                                                </a>
+                                                <ul class="dropdown-menu">
+                                                    <li>
+                                                        <a href="{{ url_for('administrators.codes_add') }}">
+                                                            <i class="icon-plus-sign">
+                                                            </i>
+                                                            Add New
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li class="{{ 'active' if navbar == 'settings' else '' }}">
+                                        <a href="{{ url_for('administrators.settings') }}">
+                                            <i class="icon-wrench"></i>
+                                            Settings
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="{{ 'active' if navbar == 'sign_in' else '' }}">
+                                        <a href="{{ url_for('users.sign_in') }}">
+                                            <i class="icon-signin"></i>
+                                            Sign In
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{ macros.flash() }}
+            {% block component %}
+            {% endblock %}
+            {{ macros.copyright() }}
+        </div>
+        {% assets "javascripts" %}
+            <script src="{{ ASSET_URL }}" type="text/javascript"></script>
+        {% endassets %}
+    </body>
+</html>

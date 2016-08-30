@@ -1,0 +1,280 @@
+{% import 'macros.html' as macros with context %}
+
+{% extends 'users/layout.html' %}
+
+{% set navbar = 'queues' %}
+{% set title = 'Queues - Overview' %}
+
+{% block component %}
+    <div class="row">
+        <div class="span12">
+            <div class="page-header">
+                {{ macros.videos('queues') }}
+                {% if g.user.get_items() %}
+                    <a
+                        class="btn btn-success pull-right"
+                        href="{{ url_for('users.queues_export') }}"
+                        >
+                        <i class="icon-download"></i>
+                        Export
+                    </a>
+                {% endif %}
+                {% if status == 'scheduled' %}
+                    <a
+                        class="btn btn-danger pull-right"
+                        href="{{ url_for('users.queues_cancel_all') }}"
+                        >
+                        <i class="icon-minus-sign"></i> Cancel All
+                    </a>
+                {% endif %}
+                {% if status == 'backlogged' %}
+                    <a
+                        class="btn btn-success pull-right"
+                        href="{{ url_for('users.queues_re_schedule_all') }}"
+                        >
+                        <i class="icon-refresh"></i>
+                        Re-schedule All
+                    </a>
+                {% endif %}
+                <h1>{{ title }}</h1>
+            </div>
+            {% if accounts %}
+                <div class="alert alert-error">
+                    <p>
+                        Some of your items in queue may not be sent due to
+                        issues with the following email accounts:
+                    </p>
+                    <ul>
+                        {% for account in accounts %}
+                            <li>{{ account.username }}</li>
+                        {% endfor %}
+                    </ul>
+                    <p>Please confirm account connectivity.</p>
+                </div>
+            {% endif %}
+            {% set counts = g.user.get_counts() %}
+            <p>
+                The queues page will display all of the email you're about to
+                send, and all of the email that you've already sent. Visit this
+                page to monitor your campaigns with great detail.
+            </p>
+            <ul class="nav nav-tabs queues">
+                <li class="{{ 'active' if status == 'everything' else '' }}">
+                    <a href="{{ url_for('users.queues_overview', status='everything') }}">
+                        <span class="badge badge-success pull-right">
+                            {{ counts['Everything'] }}
+                        </span>
+                        Everything
+                    </a>
+                </li>
+                <li class="{{ 'active' if status == 'scheduled' else '' }}">
+                    <a href="{{ url_for('users.queues_overview', status='scheduled') }}">
+                        <span class="badge badge-success pull-right">
+                            {{ counts['Scheduled'] }}
+                        </span>
+                        Scheduled
+                    </a>
+                </li>
+                <li class="{{ 'active' if status == 'skipped' else '' }}">
+                    <a href="{{ url_for('users.queues_overview', status='skipped') }}">
+                        <span class="badge badge-success pull-right">
+                            {{ counts['Skipped'] }}
+                        </span>
+                        Skipped
+                    </a>
+                </li>
+                <li class="{{ 'active' if status == 'cancelled' else '' }}">
+                    <a href="{{ url_for('users.queues_overview', status='cancelled') }}">
+                        <span class="badge badge-success pull-right">
+                            {{ counts['Cancelled'] }}
+                        </span>
+                        Cancelled
+                    </a>
+                </li>
+                <li class="{{ 'active' if status == 'backlogged' else '' }}">
+                    <a href="{{ url_for('users.queues_overview', status='backlogged') }}">
+                        <span class="badge badge-success pull-right">
+                            {{ counts['Backlogged'] }}
+                        </span>
+                        Backlogged
+                    </a>
+                </li>
+                <li class="{{ 'active' if status == 'delivered' else '' }}">
+                    <a href="{{ url_for('users.queues_overview', status='delivered') }}">
+                        <span class="badge badge-success pull-right">
+                            {{ counts['Delivered'] }}
+                        </span>
+                        Delivered
+                    </a>
+                </li>
+            </ul>
+            {% if queues %}
+                {{ macros.pagination({'name': 'users.queues_process', 'options': {'status': status}}, pager) }}
+                <table class="table table-hover table-striped">
+                    {% for queue in queues %}
+                        <tr>
+                            <td>
+                                <div class="row">
+                                    <div class="span6">
+                                        <strong>Account:</strong>
+                                        {{ queue.log.account.username }}
+                                        <br>
+                                        <strong>Template:</strong>
+                                        {{ queue.template.name }}
+                                        <br>
+                                        <i
+                                            class="icon-info-sign pull-right"
+                                            data-container="body"
+                                            data-html="true"
+                                            data-toggle="tooltip"
+                                            title=""
+                                            data-original-title="{{ queue.filter.name }}"
+                                            ></i>
+                                        <strong>Recipe:</strong>
+                                        {{ queue.filter.name|truncate(50) }}
+                                        ({{ queue.step + 1 }})
+                                        <br>
+                                        <strong>Name:</strong> {{ queue.name }}
+                                        <br>
+                                        <strong>Email:</strong>
+                                        {{ queue.email }}
+                                        <br>
+                                        <a
+                                            class="btn btn-mini btn-success pull-left"
+                                            href="{{ url_for('users.queues_view', id=queue.id) }}"
+                                            target="_blank"
+                                            >
+                                            <i class="icon-file"></i>
+                                            Preview
+                                        </a>
+                                    </div>
+                                    <div class="span6 right">
+                                        {% set scheduled_for = queue.get_scheduled_for() %}
+                                        <strong>Via:</strong>
+                                        {{ queue.get_account().username }}
+                                        <br>
+                                        <strong>Scheduled At:</strong>
+                                        {{ queue.scheduled_at|format_date_and_time }}
+                                        <br>
+                                        <strong>Scheduled For (UTC):</strong>
+                                        {{ scheduled_for[0]|format_date_and_time }}
+                                        <br>
+                                        <strong>
+                                            Scheduled For
+                                            ({{ queue.filter.schedule['timezone']}}):
+                                        </strong>
+                                        {{ scheduled_for[1]|format_date_and_time }}
+                                        <br>
+                                        <strong>Delivered At:</strong>
+                                        {{ queue.delivered_at|format_date_and_time if queue.status == 'Delivered' else 'N/A' }}
+                                        <br>
+                                        <span
+                                            class="label
+                                            {% if queue.status == 'Scheduled' %}
+                                                label-info
+                                            {% endif %}
+                                            {% if queue.status == 'Skipped' %}
+                                                label-warning
+                                            {% endif %}
+                                            {% if queue.status == 'Cancelled' %}
+                                                label-important
+                                            {% endif %}
+                                            {% if queue.status == 'Backlogged' %}
+                                                label-inverse
+                                            {% endif %}
+                                            {% if queue.status == 'Delivered' %}
+                                                label-success
+                                            {% endif %}
+                                            "
+                                            >
+                                            {{ queue.status }}
+                                        </span>
+                                        <br>
+                                        {% if queue.status == 'Scheduled' %}
+                                            <a
+                                                class="btn btn-mini btn-danger"
+                                                href="{{ url_for('users.queues_cancel', id=queue.id, status=status) }}"
+                                                >
+                                                <i class="icon-minus-sign"></i>
+                                                Cancel
+                                            </a>
+                                        {% endif %}
+                                        {% if queue.status == 'Backlogged' %}
+                                            <a
+                                                class="btn btn-mini btn-success"
+                                                href="{{ url_for('users.queues_re_schedule', id=queue.id) }}"
+                                                >
+                                                <i class="icon-refresh"></i>
+                                                Re-schedule
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                {{ macros.pagination({'name': 'users.queues_process', 'options': {'status': status}}, pager) }}
+            {% else %}
+                <div class="alert alert-error">
+                    There are no queues in the database.
+                </div>
+            {% endif %}
+            <div ng-controller="filters">
+                <hr>
+                <a
+                    class="btn clearfix pull-right"
+                    ng-click="status = true;"
+                    ng-show="!status"
+                    >
+                    <i class="icon-cogs"></i>
+                    Filter Results
+                </a>
+                <div class="page-header" ng-show="status">
+                    <a
+                        class="btn pull-right"
+                        ng-click="status = false;"
+                        >
+                        <i class="icon-cogs"></i>
+                        Hide Filters
+                    </a>
+                    <h1>Filters</h1>
+                </div>
+                <p ng-show="status">
+                    You may use the following filter settings to limit
+                    information displayed above to results that match your
+                    criteria.
+                </p>
+                <hr ng-show="status">
+                <form
+                    action="{{ url_for('users.queues_process', status=status) }}"
+                    class="form-horizontal"
+                    method="post"
+                    ng-show="status"
+                    >
+                    {{ macros.form(form) }}
+                    <div class="form-actions">
+                        <button
+                            class="btn btn-success"
+                            name="submit"
+                            type="submit"
+                            value="set"
+                            >
+                            <i class="icon-plus-sign-alt"></i>
+                            Set
+                        </button>
+                        <button
+                            class="btn btn-danger"
+                            name="submit"
+                            type="submit"
+                            value="unset"
+                            >
+                            <i class="icon-minus-sign-alt"></i>
+                            Unset
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

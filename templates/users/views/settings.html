@@ -1,0 +1,64 @@
+{% import 'macros.html' as macros with context %}
+
+{% extends 'users/layout.html' %}
+
+{% set navbar = 'settings' %}
+{% set title = 'Settings' %}
+
+{% block component %}
+    <div class="row">
+        <div class="span12">
+            <div class="page-header">
+                {{ macros.videos('settings') }}
+                <h1>{{ title }}</h1>
+            </div>
+            <form
+                action="{{ url_for('users.settings') }}"
+                class="form-horizontal"
+                method="post"
+                >
+                {{ macros.form(form) }}
+                <hr>
+                <div ng-controller="filters">
+                    <div>
+                        <span
+                            class="btn btn-mini pull-right"
+                            ng-click="status = true;"
+                            ng-hide="status"
+                            >
+                            <i class="icon icon-cogs"></i>
+                            Expand
+                        </span>
+                    </div>
+                    <div>
+                        <span
+                            class="btn btn-mini pull-right"
+                            ng-click="status = false;"
+                            ng-show="status"
+                            >
+                            <i class="icon icon-cogs"></i>
+                            Collapse
+                        </span>
+                    </div>
+                    <p ng-hide="status">
+                        This is our internal profanity filter. You may view it by
+                        pressing the "expand" button.
+                    </p>
+                    <pre
+                        ng-show="status"
+                        >{{ '\n'.join(g.settings.profanity) }}</pre>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-success" type="submit">
+                        <i class="icon-info-sign"></i>
+                        Submit
+                    </button>
+                    <button class="btn btn-danger" type="reset">
+                        <i class="icon-trash"></i>
+                        Reset
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% import 'macros.html' as macros with context %}
+
+{% extends 'users/layout.html' %}
+
+{% set navbar = 'groups_and_proxies_and_accounts' %}
+{% set title = 'Email Acccounts - Import' %}
+
+{% block component %}
+    <div class="row">
+        <div class="span12">
+            <div class="page-header">
+                {{ macros.videos('accounts') }}
+                <h1>{{ title }}</h1>
+            </div>
+            <p class="alert alert-error">
+                <i class="icon-warning-sign"></i>
+                The import function is designed to make adding a large list of
+                accounts very easy and is only available to Premium
+                subscribers. Free plans are limited to a single account.
+                Upgrade now to take advantage of all the great benefits of
+                being a Premium subscriber!"
+            </p>
+            <div class="form-actions">
+                <a
+                    class="btn btn-success"
+                    href="http://mailsidekick.com/premiumplans"
+                    target="_blank"
+                    >
+                    <i class="icon-info-sign"></i>
+                    Upgrade Now!
+                </a>
+                <a
+                    class="btn btn-danger"
+                    href="{{ url_for('users.accounts_overview') }}"
+                    >
+                    <i class="icon-trash"></i>
+                    No Thanks!
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

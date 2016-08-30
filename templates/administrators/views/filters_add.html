@@ -1,0 +1,34 @@
+{% import 'macros.html' as macros with context %}
+
+{% extends 'administrators/layout.html' %}
+
+{% set navbar = 'redeemables' %}
+{% set title = 'Recipes - Add' %}
+
+{% block component %}
+    <div class="row">
+        <div class="span12">
+            {{ macros.errors(form) }}
+            <div class="page-header">
+                <h1>{{ title }}</h1>
+            </div>
+            <form
+                action="{{ url_for('administrators.filters_add') }}"
+                class="form-horizontal"
+                method="post"
+                >
+                {{ macros.form_filter(filter, form) }}
+                <div class="form-actions">
+                    <button class="btn btn-success" type="submit">
+                        <i class="icon-info-sign"></i>
+                        Submit
+                    </button>
+                    <button class="btn btn-danger" type="reset">
+                        <i class="icon-trash"></i>
+                        Reset
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

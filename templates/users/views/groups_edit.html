@@ -1,0 +1,35 @@
+{% import 'macros.html' as macros with context %}
+
+{% extends 'users/layout.html' %}
+
+{% set navbar = 'groups_and_proxies_and_accounts' %}
+{% set title = 'Email Account Groups - Edit' %}
+
+{% block component %}
+    <div class="row">
+        <div class="span12">
+            {{ macros.errors(form) }}
+            <div class="page-header">
+                {{ macros.videos('groups') }}
+                <h1>{{ title }}</h1>
+            </div>
+            <form
+                action="{{ url_for('users.groups_edit', id=id) }}"
+                class="form-horizontal"
+                method="post"
+                >
+                {{ macros.form(form) }}
+                <div class="form-actions">
+                    <button class="btn btn-success" type="submit">
+                        <i class="icon-info-sign"></i>
+                        Submit
+                    </button>
+                    <button class="btn btn-danger" type="reset">
+                        <i class="icon-trash"></i>
+                        Reset
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

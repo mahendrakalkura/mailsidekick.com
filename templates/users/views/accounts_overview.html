@@ -1,0 +1,325 @@
+{% import 'macros.html' as macros with context %}
+
+{% extends 'users/layout.html' %}
+
+{% set navbar = 'groups_and_proxies_and_accounts' %}
+{% set title = 'Email Accounts - Overview' %}
+
+{% block component %}
+    <div class="row">
+        <div class="span12">
+            <div class="page-header">
+                {{ macros.videos('accounts') }}
+                <a
+                    class="btn btn-success pull-right"
+                    href="{{ url_for('users.accounts_import') }}"
+                    >
+                    <span class="icon-upload"></span>
+                    Import
+                </a>
+                <a
+                    class="btn btn-success pull-right"
+                    href="{{ url_for('users.accounts_add') }}"
+                    >
+                    <span class="icon-plus"></span>
+                    Add
+                </a>
+                <h1>{{ title }}</h1>
+            </div>
+            {{ macros.alerts_groups() }}
+            <p>
+                This screen displays all of your email accounts. To add
+                accounts via our user interface press "Add" and to import bulk
+                email accounts press "Import". Don't forget to verify
+                connectivity to your email accounts before using them in
+                mailing campaigns.
+            </p>
+            <p class="alert alert-info">
+                <i class="icon icon-info-sign"></i>
+                Using Gmail accounts? Please make sure to unlock captcha via
+                <a
+                    href="https://accounts.google.com/b/0/UnlockCaptcha"
+                    target="_blank"
+                    >this link</a>
+                for each of your Gmail accounts to prevent blocked
+                authentication attempts by Google.
+            </p>
+            <hr>
+            {% if accounts %}
+                <form
+                    action="{{ url_for('users.accounts_process') }}"
+                    data-caption="email accounts"
+                    method="post"
+                    ng-controller="overview"
+                    >
+                    {{ macros.pagination({'name': 'users.accounts_process', 'options': {},}, pager) }}
+                    <table class="table table-hover table-striped">
+                        <tr>
+                            <th class="narrow center">
+                                <input type="checkbox">
+                            </th>
+                            <th class="narrow">Group</th>
+                            {{ macros.th({'name': 'users.accounts_process', 'options': {},}, order_by, 'username', 'Username', '') }}
+                            <th class="narrow">Proxy</td>
+                            <th class="narrow right">Connections</td>
+                            <th class="narrow right">Queues</td>
+                            {{ macros.th({'name': 'users.accounts_process', 'options': {},}, order_by, 'status', 'Status', 'buttons') }}
+                            <th class="buttons">Actions</th>
+                        </tr>
+                        {% for account in accounts %}
+                            <tr>
+                                <td class="narrow center">
+                                    {% if not account.username == 'placeholder@mailsidekick.com' %}
+                                        <input
+                                            data-caption="{{ account.username }}"
+                                            name="ids"
+                                            type="checkbox"
+                                            value="{{ account.id }}"
+                                            >
+                                    {% endif %}
+                                </td>
+                                <td class="narrow">
+                                    {{ account.group.name }}
+                                </td>
+                                <td>{{ account.username }}</td>
+                                <td class="narrow">
+                                    {{ account.proxy.name|truncate(25) }}
+                                </td>
+                                <td class="narrow center">
+                                    {% if not account.username == 'placeholder@mailsidekick.com' %}
+                                        {% if account.connections['incoming'] == 'On' %}
+                                            <a
+                                                class="btn btn-mini btn-success"
+                                                href="{{ url_for(
+                                                    'users.accounts_verify',
+                                                    id=account.id
+                                                ) }}"
+                                                >
+                                                <i class="icon-thumbs-up"></i>
+                                            </a>
+                                        {% endif %}
+                                        {% if account.connections['incoming'] == '' %}
+                                            <a
+                                                class="btn btn-mini btn-danger"
+                                                href="{{ url_for(
+                                                    'users.accounts_verify',
+                                                    id=account.id
+                                                ) }}"
+                                                >
+                                                <i class="icon-question"></i>
+                                            </a>
+                                        {% endif %}
+                                        {% if not account.connections['incoming'] in ['On', ''] %}
+                                            <a
+                                                class="btn btn-mini btn-danger"
+                                                href="{{ url_for(
+                                                    'users.accounts_verify',
+                                                    id=account.id
+                                                ) }}"
+                                                >
+                                                <i class="icon-thumbs-down"></i>
+                                            </a>
+                                            <i
+                                                class="icon-question"
+                                                data-content="{{ account.connections['incoming'] }}"
+                                                data-toggle="popover"
+                                                ></i>
+                                        {% endif %}
+                                        {% if account.connections['outgoing'] == 'On' %}
+                                            <a
+                                                class="btn btn-mini btn-success"
+                                                href="{{ url_for(
+                                                    'users.accounts_verify',
+                                                    id=account.id
+                                                ) }}"
+                                                >
+                                                <i class="icon-thumbs-up"></i>
+                                            </a>
+                                        {% endif %}
+                                        {% if account.connections['outgoing'] == '' %}
+                                            <a
+                                                class="btn btn-mini btn-danger"
+                                                href="{{ url_for(
+                                                    'users.accounts_verify',
+                                                    id=account.id
+                                                ) }}"
+                                                >
+                                                <i class="icon-question"></i>
+                                            </a>
+                                        {% endif %}
+                                        {% if not account.connections['outgoing'] in ['On', ''] %}
+                                            <a
+                                                class="btn btn-mini btn-danger"
+                                                href="{{ url_for(
+                                                    'users.accounts_verify',
+                                                    id=account.id
+                                                ) }}"
+                                                >
+                                                <i class="icon-thumbs-down"></i>
+                                            </a>
+                                            <i
+                                                class="icon-question"
+                                                data-content="{{ account.connections['outgoing'] }}"
+                                                data-toggle="popover"
+                                                ></i>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                <td class="narrow right">
+                                    {% if not account.username == 'placeholder@mailsidekick.com' %}
+                                        {{ account.get_queues()|format_integer }}
+                                    {% endif %}
+                                </td>
+                                <td class="buttons">
+                                    {% if not account.username == 'placeholder@mailsidekick.com' %}
+                                        <a
+                                            class="btn btn-mini {{ 'btn-success' if account.status == 'On' else 'btn-danger' }}"
+                                            href="{{ url_for('users.accounts_status', id=account.id) }}"
+                                            >
+                                            <i class="icon-{{ 'plus-sign' if account.status == 'On' else 'minus-sign' }}">
+                                            </i>
+                                            {{ account.status }}
+                                        </a>
+                                    {% endif %}
+                                </td>
+                                <td class="buttons">
+                                    {% if not account.username == 'placeholder@mailsidekick.com' %}
+                                        <a
+                                            class="btn btn-mini btn-success"
+                                            href="{{ url_for('users.history_overview', id=account.id) }}"
+                                            >
+                                            <i class="icon-tags"></i>
+                                            History
+                                        </a>
+                                        <a
+                                            class="btn btn-mini btn-success"
+                                            href="{{ url_for('users.accounts_edit', id=account.id) }}"
+                                            >
+                                            <i class="icon-edit-sign"></i>
+                                            Edit
+                                        </a>
+                                        <a
+                                            class="btn btn-mini btn-danger"
+                                            href="{{ url_for('users.accounts_delete', id=account.id) }}"
+                                            >
+                                            <i class="icon-remove-sign"></i>
+                                            Delete
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    <div class="form-actions">
+                        {#
+                        <button
+                            class="btn btn-success"
+                            name="submit"
+                            type="submit"
+                            value="verify"
+                            >
+                            <i class="icon-question"></i>
+                            Verify
+                        </button>
+                        #}
+                        <button
+                            class="btn btn-success"
+                            name="submit"
+                            type="submit"
+                            value="enable"
+                            >
+                            <i class="icon-plus-sign"></i>
+                            Enable
+                        </button>
+                        <button
+                            class="btn btn-danger"
+                            name="submit"
+                            type="submit"
+                            value="disable"
+                            >
+                            <i class="icon-minus-sign"></i>
+                            Disable
+                        </button>
+                        <button
+                            class="btn btn-danger"
+                            name="submit"
+                            ng-click="process($event, false)"
+                            type="button"
+                            >
+                            <i class="icon-remove-sign"></i>
+                            Delete
+                        </button>
+                        <button
+                            class="hide"
+                            name="submit"
+                            type="submit"
+                            value="delete"
+                            >
+                        </button>
+                    </div>
+                    {{ macros.pagination({'name': 'users.accounts_process', 'options': {},}, pager) }}
+                    {{ macros.overview() }}
+                </form>
+            {% else %}
+                <div class="alert alert-error">
+                    There are no accounts in the database.
+                </div>
+            {% endif %}
+            <div ng-controller="filters">
+                <hr>
+                <a
+                    class="btn clearfix pull-right"
+                    ng-click="status = true;"
+                    ng-show="!status"
+                    >
+                    <i class="icon-cogs"></i>
+                    Filter Results
+                </a>
+                <div class="page-header" ng-show="status">
+                    <a
+                        class="btn pull-right"
+                        ng-click="status = false;"
+                        >
+                        <i class="icon-cogs"></i>
+                        Hide Filters
+                    </a>
+                    <h1>Filters</h1>
+                </div>
+                <p ng-show="status">
+                    You may use the following filter settings to limit
+                    information displayed above to results that match your
+                    criteria.
+                </p>
+                <hr ng-show="status">
+                <form
+                    action="{{ url_for('users.accounts_process') }}"
+                    class="form-horizontal"
+                    method="post"
+                    ng-show="status"
+                    >
+                    {{ macros.form(form) }}
+                    <div class="form-actions">
+                        <button
+                            class="btn btn-success"
+                            name="submit"
+                            type="submit"
+                            value="set"
+                            >
+                            <i class="icon-plus-sign-alt"></i>
+                            Set
+                        </button>
+                        <button
+                            class="btn btn-danger"
+                            name="submit"
+                            type="submit"
+                            value="unset"
+                            >
+                            <i class="icon-minus-sign-alt"></i>
+                            Unset
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

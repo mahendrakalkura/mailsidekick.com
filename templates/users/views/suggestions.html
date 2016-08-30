@@ -1,0 +1,37 @@
+{% import 'macros.html' as macros with context %}
+
+{% extends 'users/layout.html' %}
+
+{% set title = 'Suggestions' %}
+
+{% block component %}
+    <div class="row">
+        <div class="span12">
+            <div class="page-header">
+                {{ macros.videos('suggestions') }}
+                <h1>{{ title }}</h1>
+            </div>
+            <p>
+                Want to see a feature added to Mail Sidekick? Describe it below
+                and it could make it into our next release!
+            </p>
+            <form
+                action="{{ url_for('users.suggestions') }}"
+                class="form-horizontal"
+                method="post"
+                >
+                {{ macros.form(form) }}
+                <div class="form-actions">
+                    <button class="btn btn-success" type="submit">
+                        <i class="icon-info-sign"></i>
+                        Submit
+                    </button>
+                    <button class="btn btn-danger" type="reset">
+                        <i class="icon-trash"></i>
+                        Reset
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

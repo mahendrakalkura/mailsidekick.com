@@ -1,0 +1,67 @@
+{% import 'macros.html' as macros with context %}
+
+{% extends 'users/layout.html' %}
+
+{% set title = 'Survey' %}
+
+{% block component %}
+    <div class="row">
+        <div class="span12">
+            <div class="page-header">
+                <h1>{{ title }}</h1>
+            </div>
+            <form
+                action="{{ url_for('users.survey') }}?referer={{ referer }}"
+                method="post"
+                >
+                <p>
+                    Please help us by answering a few quick questions.
+                </p>
+                <p>
+                    <strong>
+                        1) How would you describe your experience with Mail
+                        Sidekick so far?
+                    </strong>
+                </p>
+                <div class="control-group required">
+                    <div class="controls">
+                        {{ form.one(class='wide-textarea simple') }}
+                    </div>
+                </div>
+                <p>
+                    <strong>
+                        2) On a scale of 1-10 (10 being the highest) how likely
+                        are you to recommend Mail Sidekick?
+                    </strong>
+                </p>
+                <div class="control-group required">
+                    <div class="controls">
+                        {{ form.two(class='wide-input') }}
+                    </div>
+                </div>
+                <p>
+                    <strong>
+                        3) If you could change one thing about Mail Sidekick,
+                        what would it be?
+                    </strong>
+                </p>
+                <div class="control-group required">
+                    <div class="controls">
+                        {{ form.three(class='wide-textarea simple') }}
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-success" type="submit">
+                        <i class="icon-info-sign"></i>
+                        Submit
+                    </button>
+                    <button class="btn btn-danger" type="reset">
+                        <i class="icon-trash"></i>
+                        Reset
+                    </button>
+                </div>
+                {{ form.hidden_tag() }}
+            </form>
+        </div>
+    </div>
+{% endblock %}

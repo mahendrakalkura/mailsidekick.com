@@ -1,0 +1,179 @@
+{% import 'macros.html' as macros with context %}
+
+{% extends 'users/layout.html' %}
+
+{% set navbar = 'templates' %}
+{% set title = 'Email Templates - Overview' %}
+
+{% block component %}
+    <div class="row">
+        <div class="span12">
+            <div class="page-header">
+                {{ macros.videos('templates') }}
+                <a
+                    class="btn btn-success pull-right"
+                    href="{{ url_for('users.templates_add') }}"
+                    >
+                    <span class="icon-plus"></span>
+                    Add
+                </a>
+                <a
+                    class="btn btn-success pull-right"
+                    data-container="body"
+                    data-html="true"
+                    data-toggle="tooltip"
+                    href="{{ url_for('users.templates_reset') }}"
+                    title="Reset Redeemed Templates"
+                    >
+                    <span class="icon-star"></span>
+                    Reset
+                </a>
+                <h1>{{ title }}</h1>
+            </div>
+            <p>
+                Templates are the emails you'll be sending. These are added to
+                recipes later and you may begin drafting them now by pressing
+                the green "Add" button on this page. You'll find lots of helpful
+                options inside.
+            </p>
+            {% if templates %}
+                <form
+                    action="{{ url_for('users.templates_process') }}"
+                    data-caption="email templates"
+                    method="post"
+                    ng-controller="overview"
+                    >
+                    {{ macros.pagination({'name': 'users.templates_process', 'options': {},}, pager) }}
+                    <table class="table table-hover table-striped">
+                        <tr>
+                            <th class="narrow center">
+                                <input type="checkbox">
+                            </th>
+                            {{ macros.th({'name': 'users.templates_process', 'options': {},}, order_by, 'name', 'Name', '') }}
+                            <th class="narrow right">Attachments</th>
+                            <th class="buttons">Actions</th>
+                        </tr>
+                        {% for template in templates %}
+                            <tr>
+                                <td class="narrow center">
+                                    <input
+                                        data-caption="{{ template.name }}"
+                                        name="ids"
+                                        type="checkbox"
+                                        value="{{ template.id }}"
+                                        >
+                                </td>
+                                <td>{{ template.name }}</td>
+                                <td class="narrow right">
+                                    {{ template.get_attachments()|length|format_integer }}
+                                </td>
+                                <td class="buttons">
+                                    <a
+                                        class="btn btn-mini btn-primary"
+                                        href="{{ url_for('users.templates_test', id=template.id) }}"
+                                        >
+                                        <i class="icon-envelope"></i>
+                                        Test
+                                    </a>
+                                    <a
+                                        class="btn btn-mini btn-success"
+                                        href="{{ url_for('users.templates_edit', id=template.id) }}"
+                                        >
+                                        <i class="icon-edit-sign"></i>
+                                        Edit
+                                    </a>
+                                    <a
+                                        class="btn btn-mini btn-danger"
+                                        href="{{ url_for('users.templates_delete', id=template.id) }}"
+                                        >
+                                        <i class="icon-remove-sign"></i>
+                                        Delete
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    <div class="form-actions">
+                        <button
+                            class="btn btn-danger"
+                            name="submit"
+                            ng-click="process($event, false)"
+                            type="button"
+                            >
+                            <i class="icon-remove-sign"></i>
+                            Delete
+                        </button>
+                        <button
+                            class="hide"
+                            name="submit"
+                            type="submit"
+                            value="delete"
+                            >
+                        </button>
+                    </div>
+                    {{ macros.pagination({'name': 'users.templates_process', 'options': {},}, pager) }}
+                    {{ macros.overview() }}
+                </form>
+            {% else %}
+                <div class="alert alert-error">
+                    There are no templates in the database.
+                </div>
+            {% endif %}
+            <div ng-controller="filters">
+                <hr>
+                <a
+                    class="btn clearfix pull-right"
+                    ng-click="status = true;"
+                    ng-show="!status"
+                    >
+                    <i class="icon-cogs"></i>
+                    Filter Results
+                </a>
+                <div class="page-header" ng-show="status">
+                    <a
+                        class="btn pull-right"
+                        ng-click="status = false;"
+                        >
+                        <i class="icon-cogs"></i>
+                        Hide Filters
+                    </a>
+                    <h1>Filters</h1>
+                </div>
+                <p ng-show="status">
+                    You may use the following filter settings to limit
+                    information displayed above to results that match your
+                    criteria.
+                </p>
+                <hr ng-show="status">
+                <form
+                    action="{{ url_for('users.templates_process') }}"
+                    class="form-horizontal"
+                    method="post"
+                    ng-show="status"
+                    >
+                    {{ macros.form(form) }}
+                    <div class="form-actions">
+                        <button
+                            class="btn btn-success"
+                            name="submit"
+                            type="submit"
+                            value="set"
+                            >
+                            <i class="icon-plus-sign-alt"></i>
+                            Set
+                        </button>
+                        <button
+                            class="btn btn-danger"
+                            name="submit"
+                            type="submit"
+                            value="unset"
+                            >
+                            <i class="icon-minus-sign-alt"></i>
+                            Unset
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

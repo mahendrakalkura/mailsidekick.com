@@ -1,0 +1,40 @@
+{% import 'macros.html' as macros with context %}
+
+{% extends 'users/layout.html' %}
+
+{% set navbar = 'queues' %}
+{% set title = 'Queues - Cancel All' %}
+
+{% block component %}
+    <div class="row">
+        <div class="span12">
+            <div class="page-header">
+                {{ macros.videos('queues') }}
+                <h1>{{ title }}</h1>
+            </div>
+            <form
+                action="{{ url_for('users.queues_cancel_all') }}"
+                class="form-horizontal"
+                method="post"
+                >
+                <p>
+                    Are you sure? This cannot be undone. Once cancelled, no
+                    mail will be sent to the terminated items.
+                </p>
+                <div class="form-actions">
+                    <button class="btn btn-success" type="submit">
+                        <i class="icon-ok-sign"></i>
+                        Yes
+                    </button>
+                    <a
+                        class="btn btn-danger"
+                        href="{{ url_for('users.queues_overview', status='scheduled') }}"
+                        >
+                        <i class="icon-remove-sign"></i>
+                        No
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

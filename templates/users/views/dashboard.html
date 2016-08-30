@@ -1,0 +1,197 @@
+{% import 'macros.html' as macros with context %}
+
+{% extends 'users/layout.html' %}
+
+{% set title = 'Dashboard' %}
+
+{% block component %}
+    <div class="row">
+        <div class="span12">
+            <div class="page-header">
+                {{ macros.videos('dashboard') }}
+                <a
+                    class="btn pull-right"
+                    href="{{ url_for('users.suggestions') }}"
+                    >
+                    <span class="icon-comment"></span>
+                    Suggestions
+                </a>
+                <h1>{{ title }}</h1>
+            </div>
+            <p>
+                Welcome to the Users Panel of mailsidekick.com,
+                <strong>{{ g.user.get_first_name() }}</strong>.
+            </p>
+            <hr>
+        </div>
+    </div>
+    {% if alerts['accounts_gmail'] or alerts['accounts_proxies'] or alerts['credits'] or alerts['filters'] %}
+        <div class="row">
+            <div class="span12">
+                <div class="page-header">
+                    <h4>Alerts</h4>
+                </div>
+                {% for account in alerts['accounts_gmail'] %}
+                    <div class="alert alert-error">
+                        Please try disabling TLS for
+                        <strong>{{ account.username }}</strong>. This may
+                        resolve the outgoing issue. Gmail accounts created
+                        outside of the US typically require TLS, and Gmail
+                        accounts created within the US do not.
+                    </div>
+                {% endfor %}
+                {% for account in alerts['accounts_proxies'] %}
+                    <div class="alert alert-error">
+                        The connection to
+                        <strong>{{ account.username }}</strong> via
+                        <strong>{{ account.proxy.name }}</strong> is not
+                        working Please assign a new proxy, correct the issue,
+                        or remove the proxy to continue use with this email
+                        account. No actions will be performed until this has
+                        been resolved.
+                    </div>
+                {% endfor %}
+                {% if alerts['credits'] %}
+                    <div class="alert alert-error">
+                        Your credit balance is running low ({{ alerts['credits'] }}).
+                    </div>
+                {% endif %}
+                {% for filter in alerts['filters'] %}
+                    <div class="alert alert-error">
+                        Recipe <strong>{{ filter.name }}</strong> has a
+                        reserved period of
+                        <strong>{{ filter.visibility }}</strong> days. The
+                        total time required for recipe completion in the
+                        <strong>{{ filter.steps|length }}</strong> steps
+                        defined is <strong>{{ total_days }}</strong> days. Some
+                        steps will not be completed until this has been
+                        resolved.
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+    <div class="row">
+        <div class="span6">
+            <div class="page-header">
+                <h4>News</h4>
+            </div>
+            {% if articles %}
+                <div class="box">
+                    {% for article in articles %}
+                        <div class="alert alert-{{ article.type }} article">
+                            <small class="pull-right">
+                                {{ article.timestamp | format_date_and_time }}
+                            </small>
+                            <h4>
+                                {{ article.get_prefix() }} {{ article.title }}
+                            </h4>
+                            {{ article.contents|safe }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        <div
+            class="span6"
+            data-url="{{ url_for('users.dashboard_history') }}"
+            ng-controller="history"
+            >
+            <div class="page-header">
+                <span class="pull-right">
+                    <span ng-show="seconds">
+                        Refreshing history in [! seconds !] seconds.
+                    </span>
+                    <span ng-show="!seconds">
+                        <i class="icon-spinner icon-spin"></i>
+                    </span>
+                </span>
+                <h4>History</h4>
+            </div>
+            <div class="box">
+                <p class="alert alert-success" ng-repeat="item in items">
+                    An email was sent to [! item.name !] ([! item.email !]) via
+                    [! item.account.username !] at [! item.delivered_at !].
+                    <br>
+                    <a
+                        class="btn btn-mini btn-success"
+                        href="[! item.href !]"
+                        target="_blank"
+                        >
+                        <i class="icon-file"></i>
+                        View
+                    </a>
+                </p>
+                <p class="alert alert-danger" ng-show="!items.length">
+                    There are no items in your history.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span6">
+            <div class="page-header">
+                <h4>Statistics</h4>
+            </div>
+            {% if items %}
+                <table class="table table-hover table-striped">
+                    {% for item in items %}
+                        <tr>
+                            <td>{{ item.key }}</td>
+                            <td class="narrow right">
+                                {{ item.value|format_integer }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% endif %}
+        </div>
+        <div class="span6">
+            <div class="page-header">
+                <h4>Plan Details</h4>
+            </div>
+            <table class="table table-hover table-striped">
+                <tr>
+                    <td>Plan</td>
+                    <td class="narrow right">
+                        {{ g.user.get_group() }}
+                    </td>
+                </tr>
+                {#
+                <tr>
+                    <td>Credits</td>
+                    <td class="narrow right">
+                        <a
+                            class="btn btn-mini btn-success"
+                            href="http://mailsidekick.com/get/credits"
+                            >
+                            <i class="icon-dollar"></i>
+                            Get More
+                        </a>
+                    </td>
+                </tr>
+                #}
+                {% if not g.user.get_group() in ['Free', 'Premium', 'Premium+'] %}
+                    <tr>
+                        <td>Credits/Total</td>
+                        <td class="narrow right">
+                            {{ g.user.get_credits()['total']|format_integer }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Credits/Used</td>
+                        <td class="narrow right">
+                            {{ g.user.get_credits()['used']|format_integer }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Credits/Remaining</td>
+                        <td class="narrow right">
+                            {{ g.user.get_credits()['remaining']|format_integer }}
+                        </td>
+                    </tr>
+                {% endif %}
+            </table>
+        </div>
+    </div>
+{% endblock %}

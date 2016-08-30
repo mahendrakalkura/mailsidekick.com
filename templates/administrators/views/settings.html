@@ -1,0 +1,59 @@
+{% import 'macros.html' as macros with context %}
+
+{% extends 'administrators/layout.html' %}
+
+{% set navbar = 'settings' %}
+{% set title = 'Settings' %}
+
+{% block component %}
+    <div class="row">
+        <div class="span12">
+            <div class="page-header">
+                <h1>{{ title }}</h1>
+            </div>
+            <form
+                action="{{ url_for('administrators.settings') }}"
+                class="form-horizontal"
+                method="post"
+                >
+                <ul class="nav nav-tabs">
+                    <li class="active">
+                        <a data-toggle="tab" href="#videos">Videos</a>
+                    </li>
+                    <li><a data-toggle="tab" href="#others">Others</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="videos">
+                        {{ macros.widget(form.videos_dashboard) }}
+                        {{ macros.widget(form.videos_proxies) }}
+                        {{ macros.widget(form.videos_groups) }}
+                        {{ macros.widget(form.videos_accounts) }}
+                        {{ macros.widget(form.videos_variables) }}
+                        {{ macros.widget(form.videos_templates) }}
+                        {{ macros.widget(form.videos_packs) }}
+                        {{ macros.widget(form.videos_filters) }}
+                        {{ macros.widget(form.videos_queues) }}
+                        {{ macros.widget(form.videos_settings) }}
+                        {{ macros.widget(form.videos_suggestions) }}
+                    </div>
+                    <div class="tab-pane" id="others">
+                        {{ macros.widget(form.profanity) }}
+                        {{ macros.widget(form.version) }}
+                        {{ macros.widget(form.change_log) }}
+                    </div>
+                </div>
+                {{ form.hidden_tag() }}
+                <div class="form-actions">
+                    <button class="btn btn-success" type="submit">
+                        <i class="icon-info-sign"></i>
+                        Submit
+                    </button>
+                    <button class="btn btn-danger" type="reset">
+                        <i class="icon-trash"></i>
+                        Reset
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

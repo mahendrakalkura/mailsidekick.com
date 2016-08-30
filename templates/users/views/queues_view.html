@@ -1,0 +1,88 @@
+{% import 'macros.html' as macros with context %}
+
+{% extends 'users/layout.html' %}
+
+{% set navbar = 'queues' %}
+{% set title = 'Queues - View' %}
+
+{% block component %}
+    {% set contents = queue.template.get_subject_and_bodies() %}
+    <div class="row">
+        <div class="span12">
+            <div class="page-header">
+                {{ macros.videos('queues') }}
+                <h1>{{ title }}</h1>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span6">
+            <div class="well well-large">
+                <p>
+                    <strong>Account:</strong> {{ queue.log.account.username }}
+                    <br>
+                    <strong>Template:</strong> {{ queue.template.name }}
+                    <br>
+                    <strong>Recipe:</strong> {{ queue.filter.name }}
+                    <br>
+                    <strong>From:</strong> {{ queue.get_account().username }}
+                    <br>
+                    <strong>To:</strong>
+                    {{ queue.name }} &lt;{{ queue.email }}&gt;
+                </p>
+            </div>
+        </div>
+        <div class="span6">
+            <div class="well well-large">
+                <p>
+                    {% set scheduled_for = queue.get_scheduled_for() %}
+                    <strong>Via:</strong>
+                    {{ queue.get_account().username }}
+                    <br>
+                    <strong>Scheduled At:</strong>
+                    {{ queue.scheduled_at|format_date_and_time }}
+                    <br>
+                    <strong>Scheduled For (UTC):</strong>
+                    {{ scheduled_for[0]|format_date_and_time }}
+                    <br>
+                    <strong>
+                        Scheduled For ({{ queue.filter.schedule['timezone']}}):
+                    </strong>
+                    {{ scheduled_for[1]|format_date_and_time }}
+                    <br>
+                    <strong>Delivered At:</strong>
+                    {{ queue.delivered_at|format_date_and_time if queue.status == 'Delivered' else 'N/A' }}
+                    <br>
+                    <span
+                        class="label
+                        {% if queue.status == 'Scheduled' %}
+                            label-info
+                        {% endif %}
+                        {% if queue.status == 'Skipped' %}
+                            label-warning
+                        {% endif %}
+                        {% if queue.status == 'Cancelled' %}
+                            label-important
+                        {% endif %}
+                        {% if queue.status == 'Delivered' %}
+                            label-success
+                        {% endif %}
+                        "
+                        >
+                        {{ queue.status }}
+                    </span>
+                <p>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span12">
+            <hr>
+            <h4>{{ contents[0] }}</h4>
+            <hr>
+            <p>{{ contents[1]|format_paragraph }}</p>
+            <hr>
+            {{ contents[2]|safe }}
+        </div>
+    </div>
+{% endblock %}

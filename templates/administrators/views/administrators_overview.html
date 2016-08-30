@@ -1,0 +1,163 @@
+{% import 'macros.html' as macros with context %}
+
+{% extends 'administrators/layout.html' %}
+
+{% set navbar = 'administrators' %}
+{% set title = 'Administrators - Overview' %}
+
+{% block component %}
+    <div class="row">
+        <div class="span12">
+            <div class="page-header">
+                <a
+                    class="btn btn-success pull-right"
+                    href="{{ url_for('administrators.administrators_add') }}"
+                    >
+                    <span class="icon-plus"></span>
+                    Add
+                </a>
+                <h1>{{ title }}</h1>
+            </div>
+            {% if administrators %}
+                <form
+                    action="{{ url_for('administrators.administrators_process') }}"
+                    data-caption="administrators"
+                    method="post"
+                    ng-controller="overview"
+                    >
+                    {{ macros.pagination({'name': 'administrators.administrators_process', 'options': {},}, pager) }}
+                    <table class="table table-hover table-striped">
+                        <tr>
+                            <th class="narrow center">
+                                <input type="checkbox">
+                            </th>
+                            {{ macros.th({'name': 'administrators.administrators_process', 'options': {},}, order_by, 'id', 'ID', 'narrow right') }}
+                            {{ macros.th({'name': 'administrators.administrators_process', 'options': {},}, order_by, 'email', 'Email', '') }}
+                            {{ macros.th({'name': 'administrators.administrators_process', 'options': {},}, order_by, 'name', 'Name', 'narrow') }}
+                            {{ macros.th({'name': 'administrators.administrators_process', 'options': {},}, order_by, 'status', 'Status', 'buttons') }}
+                            <th class="buttons">Actions</th>
+                        </tr>
+                        {% for administrator in administrators %}
+                            <tr>
+                                <td class="narrow center">
+                                    <input
+                                        data-caption="{{ administrator.email }}"
+                                        name="ids"
+                                        type="checkbox"
+                                        value="{{ administrator.id }}"
+                                        >
+                                </td>
+                                <td class="narrow right">
+                                    {{ administrator.id }}
+                                </td>
+                                <td>{{ administrator.email }}</td>
+                                <td class="narrow">
+                                    {{ administrator.name }}
+                                </td>
+                                <td class="buttons">
+                                    <a
+                                        class="btn btn-mini {{ 'btn-success' if administrator.status == 'On' else 'btn-danger' }}"
+                                        href="{{ url_for('administrators.administrators_status', id=administrator.id) }}"
+                                        >
+                                        <i class="icon-{{ 'plus-sign' if administrator.status == 'On' else 'minus-sign' }}">
+                                        </i>
+                                        {{ administrator.status }}
+                                    </a>
+                                </td>
+                                <td class="buttons">
+                                    <a
+                                        class="btn btn-mini btn-success"
+                                        href="{{ url_for('administrators.administrators_edit', id=administrator.id) }}"
+                                        >
+                                        <i class="icon-edit-sign"></i>
+                                        Edit
+                                    </a>
+                                    <a
+                                        class="btn btn-mini btn-danger"
+                                        href="{{ url_for('administrators.administrators_delete', id=administrator.id) }}"
+                                        >
+                                        <i class="icon-remove-sign"></i>
+                                        Delete
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    <div class="form-actions">
+                        <button
+                            class="btn btn-success"
+                            name="submit"
+                            type="submit"
+                            value="enable"
+                            >
+                            <i class="icon-plus-sign"></i>
+                            Enable
+                        </button>
+                        <button
+                            class="btn btn-danger"
+                            name="submit"
+                            type="submit"
+                            value="disable"
+                            >
+                            <i class="icon-minus-sign"></i>
+                            Disable
+                        </button>
+                        <button
+                            class="btn btn-danger"
+                            name="submit"
+                            ng-click="process($event, false)"
+                            type="button"
+                            >
+                            <i class="icon-remove-sign"></i>
+                            Delete
+                        </button>
+                        <button
+                            class="hide"
+                            name="submit"
+                            type="submit"
+                            value="delete"
+                            >
+                        </button>
+                    </div>
+                    {{ macros.pagination({'name': 'administrators.administrators_process', 'options': {},}, pager) }}
+                    {{ macros.overview() }}
+                </form>
+            {% else %}
+                <div class="alert alert-error">
+                    There are no administrators in the database.
+                </div>
+            {% endif %}
+            <hr>
+            <div class="page-header">
+                <h1>Filters</h1>
+            </div>
+            <form
+                action="{{ url_for('administrators.administrators_process') }}"
+                class="form-horizontal"
+                method="post"
+                >
+                {{ macros.form(form) }}
+                <div class="form-actions">
+                    <button
+                        class="btn btn-success"
+                        name="submit"
+                        type="submit"
+                        value="set"
+                        >
+                        <i class="icon-plus-sign-alt"></i>
+                        Set
+                    </button>
+                    <button
+                        class="btn btn-danger"
+                        name="submit"
+                        type="submit"
+                        value="unset"
+                        >
+                        <i class="icon-minus-sign-alt"></i>
+                        Unset
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

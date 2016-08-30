@@ -1,0 +1,197 @@
+{% import 'macros.html' as macros with context %}
+
+{% extends 'administrators/layout.html' %}
+
+{% set navbar = 'articles' %}
+{% set title = 'Articles - Overview' %}
+
+{% block component %}
+    <div class="row">
+        <div class="span12">
+            <div class="page-header">
+                <a
+                    class="btn btn-success pull-right"
+                    href="{{ url_for('administrators.articles_add') }}"
+                    >
+                    <span class="icon-plus"></span>
+                    Add
+                </a>
+                <h1>{{ title }}</h1>
+            </div>
+            {% if articles %}
+                <form
+                    action="{{ url_for('administrators.articles_process') }}"
+                    data-caption="articles"
+                    method="post"
+                    ng-controller="overview"
+                    >
+                    {{ macros.pagination({'name': 'administrators.articles_process', 'options': {},}, pager) }}
+                    <table class="table table-hover table-striped">
+                        <tr>
+                            <th class="narrow center">
+                                <input type="checkbox">
+                            </th>
+                            <th class="narrow right">ID</th>
+                            <th class="narrow center">Type</th>
+                            <th>Title</th>
+                            <th class="narrow">Date/Time</th>
+                            <th class="status">Sticky?</th>
+                            <th class="status">Status</th>
+                            <th class="buttons">Actions</th>
+                        </tr>
+                        {% for article in articles %}
+                            <tr>
+                                <td class="narrow center">
+                                    <input
+                                        data-caption="{{ article.title }}"
+                                        name="ids"
+                                        type="checkbox"
+                                        value="{{ article.id }}"
+                                        >
+                                </td>
+                                <td class="narrow right">{{ article.id }}</td>
+                                <td class="narrow center">
+                                    {{ article.get_type() }}
+                                </td>
+                                <td>
+                                    {{ article.get_prefix() }}
+                                    {{ article.title }}
+                                </td>
+                                <td class="narrow">
+                                    {{ article.timestamp|format_date_and_time }}
+                                </td>
+                                <td class="buttons">
+                                    <a
+                                        class="btn btn-mini {{ 'btn-success' if article.sticky == 'Yes' else 'btn-danger' }}"
+                                        href="{{ url_for('administrators.articles_sticky', id=article.id) }}"
+                                        >
+                                        <i class="icon-{{ 'plus-sign' if article.sticky == 'Yes' else 'minus-sign' }}">
+                                        </i>
+                                        {{ article.sticky }}
+                                    </a>
+                                </td>
+                                <td class="buttons">
+                                    <a
+                                        class="btn btn-mini {{ 'btn-success' if article.status == 'On' else 'btn-danger' }}"
+                                        href="{{ url_for('administrators.articles_status', id=article.id) }}"
+                                        >
+                                        <i class="icon-{{ 'plus-sign' if article.status == 'On' else 'minus-sign' }}">
+                                        </i>
+                                        {{ article.status }}
+                                    </a>
+                                </td>
+                                <td class="buttons">
+                                    <a
+                                        class="btn btn-mini btn-success"
+                                        href="{{ url_for('administrators.articles_edit', id=article.id) }}"
+                                        >
+                                        <i class="icon-edit-sign"></i>
+                                        Edit
+                                    </a>
+                                    <a
+                                        class="btn btn-mini btn-danger"
+                                        href="{{ url_for('administrators.articles_delete', id=article.id) }}"
+                                        >
+                                        <i class="icon-remove-sign"></i>
+                                        Delete
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    <div class="form-actions">
+                        <button
+                            class="btn btn-success"
+                            name="submit"
+                            type="submit"
+                            value="enable"
+                            >
+                            <i class="icon-plus-sign"></i>
+                            Enable
+                        </button>
+                        <button
+                            class="btn btn-danger"
+                            name="submit"
+                            type="submit"
+                            value="disable"
+                            >
+                            <i class="icon-minus-sign"></i>
+                            Disable
+                        </button>
+                        <button
+                            class="btn btn-success"
+                            name="submit"
+                            type="submit"
+                            value="stick"
+                            >
+                            <i class="icon-plus-sign"></i>
+                            Stick
+                        </button>
+                        <button
+                            class="btn btn-danger"
+                            name="submit"
+                            type="submit"
+                            value="unstick"
+                            >
+                            <i class="icon-minus-sign"></i>
+                            Unstick
+                        </button>
+                        <button
+                            class="btn btn-danger"
+                            name="submit"
+                            ng-click="process($event, false)"
+                            type="button"
+                            >
+                            <i class="icon-remove-sign"></i>
+                            Delete
+                        </button>
+                        <button
+                            class="hide"
+                            name="submit"
+                            type="submit"
+                            value="delete"
+                            >
+                        </button>
+                    </div>
+                    {{ macros.pagination({'name': 'administrators.articles_process', 'options': {},}, pager) }}
+                    {{ macros.overview() }}
+                </form>
+            {% else %}
+                <div class="alert alert-error">
+                    There are no articles in the database.
+                </div>
+            {% endif %}
+            <hr>
+            <div class="page-header">
+                <h1>Filters</h1>
+            </div>
+            <form
+                action="{{ url_for('administrators.articles_process') }}"
+                class="form-horizontal"
+                method="post"
+                >
+                {{ macros.form(form) }}
+                <div class="form-actions">
+                    <button
+                        class="btn btn-success"
+                        name="submit"
+                        type="submit"
+                        value="set"
+                        >
+                        <i class="icon-plus-sign-alt"></i>
+                        Set
+                    </button>
+                    <button
+                        class="btn btn-danger"
+                        name="submit"
+                        type="submit"
+                        value="unset"
+                        >
+                        <i class="icon-minus-sign-alt"></i>
+                        Unset
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

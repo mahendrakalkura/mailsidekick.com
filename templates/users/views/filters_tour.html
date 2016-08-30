@@ -1,0 +1,60 @@
+{% import 'macros.html' as macros with context %}
+
+{% extends 'users/layout.html' %}
+
+{% set navbar = 'packs_and_filters' %}
+{% set title = 'Recipes - Tour' %}
+
+{% block component %}
+    <div class="row" id="tour">
+        <div class="span12">
+            {{ macros.errors(form) }}
+            <div class="page-header">
+                {{ macros.videos('filters') }}
+                <h1>{{ title }}</h1>
+            </div>
+            {{ macros.alerts_accounts() }}
+            <form class="form-horizontal" method="post">
+                {{ macros.form_filter(filter, form) }}
+                <div class="form-actions">
+                    <button
+                        class="btn btn-success"
+                        disabled
+                        id="submit"
+                        type="button"
+                        >
+                        <i class="icon-info-sign"></i>
+                        Submit
+                    </button>
+                    <button class="btn btn-danger" disabled type="button">
+                        <i class="icon-trash"></i>
+                        Reset
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="hide template">
+            <div class="popover tour">
+                <div class="arrow"></div>
+                <h3 class="popover-title"></h3>
+                <div class="popover-content"></div>
+                <div class="popover-navigation">
+                    <button class="btn btn-default pull-right" data-role="end">
+                        <i class="icon icon-remove-sign"></i>
+                        End Tour
+                    </button>
+                    <div class="btn-group">
+                        <button class="btn btn-default" data-role="prev">
+                            <i class="icon icon-double-angle-left"></i>
+                            Prev
+                        </button>
+                        <button class="btn btn-default" data-role="next">
+                           Next
+                           <i class="icon icon-double-angle-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

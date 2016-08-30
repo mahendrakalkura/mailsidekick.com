@@ -1,0 +1,17 @@
+{% extends 'others/layout.html' %}
+
+{% set title = 'Error 500 - Internal Server Error' %}
+
+{% block component %}
+    <div class="row">
+        <div class="span12">
+            <div class="page-header">
+                <h1>{{ title }}</h1>
+            </div>
+            <p class="alert alert-error">
+                The page that you have requested has generated an error.
+            </p>
+            <p>URL: <a href="{{ request.url }}">{{ request.url }}</a></p>
+        </div>
+    </div>
+{% endblock %}

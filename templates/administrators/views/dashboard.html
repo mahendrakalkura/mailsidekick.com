@@ -1,0 +1,67 @@
+{% extends 'administrators/layout.html' %}
+
+{% set title = 'Dashboard' %}
+
+{% block component %}
+    <div class="row">
+        <div class="span12">
+            <div class="page-header">
+                <h1>{{ title }}</h1>
+            </div>
+            <p>
+                Welcome to the Administrators Panel of mailsidekick.com,
+                <strong>{{ g.administrator.name }}</strong>.
+            </p>
+            <div class="page-header">
+                <h1>System Health</h1>
+            </div>
+            <div class="row">
+                <div class="span6">
+                    <div class="page-header">
+                        <h4>Usage</h4>
+                    </div>
+                    <table class="table table-hover table-striped">
+                        {% for item in usage %}
+                            <tr>
+                                <td>{{ item.key|safe }}</td>
+                                <td class="narrow right">
+                                    {{ item.value|safe }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+                <div class="span6">
+                    <div class="page-header">
+                        <h4>Backups</h4>
+                    </div>
+                    <table class="table table-hover table-striped">
+                        {% for item in backups %}
+                            <tr>
+                                <td>{{ item.key|safe }}</td>
+                                <td class="narrow right">
+                                    {{ item.value|safe }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+            <div class="page-header">
+                <h1>Statistics</h1>
+            </div>
+            {% if statistics %}
+                <table class="table table-hover table-striped">
+                    {% for item in statistics %}
+                        <tr>
+                            <td>{{ item.key }}</td>
+                            <td class="narrow right">
+                                {{ item.value|format_integer }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

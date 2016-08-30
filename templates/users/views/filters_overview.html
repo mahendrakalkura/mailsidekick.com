@@ -1,0 +1,215 @@
+{% import 'macros.html' as macros with context %}
+
+{% extends 'users/layout.html' %}
+
+{% set navbar = 'packs_and_filters' %}
+{% set title = 'Recipes - Overview' %}
+
+{% block component %}
+    <div class="row">
+        <div class="span12">
+            <div class="page-header">
+                {{ macros.videos('filters') }}
+                <a
+                    class="btn btn-success pull-right"
+                    href="{{ url_for('users.filters_add') }}"
+                    >
+                    <span class="icon-plus"></span>
+                    Add
+                </a>
+                <a
+                    class="btn btn-success pull-right"
+                    data-container="body"
+                    data-html="true"
+                    data-toggle="tooltip"
+                    href="{{ url_for('users.filters_reset') }}"
+                    title="Reset Redeemed Recipes"
+                    >
+                    <span class="icon-star"></span>
+                    Reset
+                </a>
+                {% if examples and g.user.ID == 1 %}
+                    <div class="btn-group pull-right">
+                        <a
+                            class="btn dropdown-toggle"
+                            data-toggle="dropdown"
+                           >
+                            <i class="icon icon-cogs"></i>
+                            Examples
+                            <i class="caret"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            {% for example in examples %}
+                                <li>
+                                    <a
+                                        href="{{ url_for('users.filters_tour', id=example[0]) }}"
+                                        >
+                                        <i class="icon icon-cog"></i>
+                                        {{ example[1] }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+                <h1>{{ title }}</h1>
+            </div>
+            <p>
+                Recipes are the core of Mail Sidekick. This is where you'll tie
+                everything together in one easy to use interface. Start by
+                pressing the green "Add" button on this page. You'll need to
+                have at least one email account, and one template before you
+                begin.
+            </p>
+            <p class="alert alert-info">
+                Important Notice: If you've redeemed a recipe template from us
+                then it currently has the placeholder email account assigned to
+                each step in the recipe. Please change this email to one of
+                your own prior to using the recipe. Email will not be sent if
+                this has not been changed. Thank you.
+            </p>
+            {{ macros.alerts_accounts() }}
+            {% if filters %}
+                <form
+                    action="{{ url_for('users.filters_process') }}"
+                    data-caption="recipes"
+                    method="post"
+                    ng-controller="overview"
+                    >
+                    <table class="table table-hover table-striped">
+                        <tr>
+                            <th class="narrow center">
+                                <input type="checkbox">
+                            </th>
+                            <th class="narrow">Pack</th>
+                            <th>Name</th>
+                            <th class="narrow right">Conditions</th>
+                            <th class="narrow right">Steps</th>
+                            <th class="buttons">Status</th>
+                            <th class="buttons">Position</th>
+                            <th class="buttons">Actions</th>
+                        </tr>
+                        {% for filter in filters %}
+                            <tr>
+                                <td class="narrow center">
+                                    <input
+                                        data-caption="{{ filter.name }}"
+                                        name="ids"
+                                        type="checkbox"
+                                        value="{{ filter.id }}"
+                                        >
+                                </td>
+                                <td class="narrow">
+                                    {{ filter.pack.name|default('N/A') }}
+                                </td>
+                                <td>
+                                    <i
+                                        class="icon-info-sign pull-right"
+                                        data-container="body"
+                                        data-html="true"
+                                        data-toggle="tooltip"
+                                        title="{{ filter.name }}"
+                                        ></i>
+                                    {{ filter.name|truncate(25) }}
+                                </td>
+                                <td class="narrow right">
+                                    {{ filter.conditions|length|format_integer }}
+                                </td>
+                                <td class="narrow right">
+                                    {{ filter.steps|length|format_integer }}
+                                </td>
+                                <td class="buttons">
+                                    <a
+                                        class="btn btn-mini {{ 'btn-success' if filter.status == 'On' else 'btn-danger' }}"
+                                        href="{{ url_for('users.filters_status', id=filter.id) }}"
+                                        >
+                                        <i class="icon-{{ 'plus-sign' if filter.status == 'On' else 'minus-sign' }}">
+                                        </i>
+                                        {{ filter.status }}
+                                    </a>
+                                </td>
+                                <td class="buttons">
+                                    <a
+                                        class="btn btn-mini"
+                                        href="{{ url_for('users.filters_position', id=filter.id, direction='up') }}"
+                                        {% if loop.first %}
+                                            style="visibility: hidden"
+                                        {% endif %}
+                                        >
+                                        <i class="icon-circle-arrow-up lone"></i>
+                                    </a>
+                                    <a
+                                        class="btn btn-mini"
+                                        href="{{ url_for('users.filters_position', id=filter.id, direction='down') }}"
+                                        {% if loop.last %}
+                                            style="visibility: hidden"
+                                        {% endif %}
+                                        >
+                                        <i class="icon-circle-arrow-down lone"></i>
+                                    </a>
+                                </td>
+                                <td class="buttons">
+                                    <a
+                                        class="btn btn-mini btn-success"
+                                        href="{{ url_for('users.filters_edit', id=filter.id) }}"
+                                        >
+                                        <i class="icon-edit-sign"></i>
+                                        Edit
+                                    </a>
+                                    <a
+                                        class="btn btn-mini btn-danger"
+                                        href="{{ url_for('users.filters_delete', id=filter.id) }}"
+                                        >
+                                        <i class="icon-remove-sign"></i>
+                                        Delete
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    <div class="form-actions">
+                        <button
+                            class="btn btn-success"
+                            name="submit"
+                            type="submit"
+                            value="enable"
+                            >
+                            <i class="icon-plus-sign"></i>
+                            Enable
+                        </button>
+                        <button
+                            class="btn btn-danger"
+                            name="submit"
+                            type="submit"
+                            value="disable"
+                            >
+                            <i class="icon-minus-sign"></i>
+                            Disable
+                        </button>
+                        <button
+                            class="btn btn-danger"
+                            name="submit"
+                            ng-click="process($event, false)"
+                            type="button"
+                            >
+                            <i class="icon-remove-sign"></i>
+                            Delete
+                        </button>
+                        <button
+                            class="hide"
+                            name="submit"
+                            type="submit"
+                            value="delete"
+                            >
+                        </button>
+                    </div>
+                    {{ macros.overview() }}
+                </form>
+            {% else %}
+                <div class="alert alert-error">
+                    There are no recipes in the database.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,210 @@
+{% import 'macros.html' as macros with context %}
+
+{% extends 'users/layout.html' %}
+
+{% set navbar = 'groups_and_proxies_and_accounts' %}
+{% set title = 'Proxies - Overview' %}
+
+{% block component %}
+    <div class="row">
+        <div class="span12">
+            <div class="page-header">
+                {{ macros.videos('proxies') }}
+                <a
+                    class="btn btn-success pull-right"
+                    href="{{ url_for('users.proxies_add') }}"
+                    >
+                    <span class="icon-plus"></span>
+                    Add
+                </a>
+                <h1>{{ title }}</h1>
+            </div>
+            <p>
+                Proxies may be used to connect to and send from your email
+                accounts. We recommend the use of proxies to achieve a higher
+                inbox rate. Add proxies by pressing the green "Add" button on
+                this page. You may name them for easy identification within
+                your recipes later.
+            </p>
+            {% if proxies %}
+                <form
+                    action="{{ url_for('users.proxies_process') }}"
+                    data-caption="proxies"
+                    method="post"
+                    ng-controller="overview"
+                    >
+                    {{ macros.pagination({'name': 'users.proxies_process', 'options': {},}, pager) }}
+                    <table class="table table-hover table-striped">
+                        <tr>
+                            <th class="narrow center">
+                                <input type="checkbox">
+                            </th>
+                            {{ macros.th({'name': 'users.proxies_process', 'options': {},}, order_by, 'name', 'Name', '') }}
+                            {{ macros.th({'name': 'users.proxies_process', 'options': {},}, order_by, 'protocol', 'Protocol', '') }}
+                            <th class="narrow">Details</td>
+                            {{ macros.th({'name': 'users.proxies_process', 'options': {},}, order_by, 'status', 'Status', 'buttons') }}
+                            <th class="buttons">Actions</th>
+                        </tr>
+                        {% for proxy in proxies %}
+                            <tr>
+                                <td class="narrow center">
+                                    <input
+                                        data-caption="{{ proxy.name }}"
+                                        name="ids"
+                                        type="checkbox"
+                                        value="{{ proxy.id }}"
+                                        >
+                                </td>
+                                <td>{{ proxy.name }}</td>
+                                <td class="narrow">
+                                    {{ proxy.get_protocol() }}
+                                </td>
+                                <td class="narrow">
+                                    {{ proxy.hostname }}:{{ proxy.port_number }}
+                                </td>
+                                <td class="buttons">
+                                    {% if proxy.status == 'On' %}
+                                        <a
+                                            class="btn btn-mini btn-success"
+                                            href="{{ url_for('users.proxies_verify', id=proxy.id) }}"
+                                            >
+                                            <i class="icon-thumbs-up">
+                                            </i>
+                                        </a>
+                                    {% endif %}
+                                    {% if proxy.status == '' %}
+                                        <a
+                                            class="btn btn-mini btn-danger"
+                                            href="{{ url_for('users.proxies_verify', id=proxy.id) }}"
+                                            >
+                                            <i class="icon-question">
+                                            </i>
+                                        </a>
+                                    {% endif %}
+                                    {% if not proxy.status in ['On', ''] %}
+                                        <a
+                                            class="btn btn-mini btn-danger"
+                                            data-container="body"
+                                            data-toggle="tooltip"
+                                            href="{{ url_for('users.proxies_verify', id=proxy.id) }}"
+                                            title="{{ proxy.status }}"
+                                            >
+                                            <i class="icon-thumbs-down">
+                                            </i>
+                                        </a>
+                                    {% endif %}
+                                </td>
+                                <td class="buttons">
+                                    <a
+                                        class="btn btn-mini btn-success"
+                                        href="{{ url_for('users.proxies_edit', id=proxy.id) }}"
+                                        >
+                                        <i class="icon-edit-sign"></i>
+                                        Edit
+                                    </a>
+                                    <a
+                                        class="btn btn-mini btn-danger"
+                                        href="{{ url_for('users.proxies_delete', id=proxy.id) }}"
+                                        >
+                                        <i class="icon-remove-sign"></i>
+                                        Delete
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    <div class="form-actions">
+                        {#
+                        <button
+                            class="btn btn-success"
+                            name="submit"
+                            type="submit"
+                            value="verify"
+                            >
+                            <i class="icon-question"></i>
+                            Verify
+                        </button>
+                        #}
+                        <button
+                            class="btn btn-danger"
+                            name="submit"
+                            ng-click="process($event, false)"
+                            type="button"
+                            >
+                            <i class="icon-remove-sign"></i>
+                            Delete
+                        </button>
+                        <button
+                            class="hide"
+                            name="submit"
+                            type="submit"
+                            value="delete"
+                            >
+                        </button>
+                    </div>
+                    {{ macros.pagination({'name': 'users.proxies_process', 'options': {},}, pager) }}
+                    {{ macros.overview() }}
+                </form>
+            {% else %}
+                <div class="alert alert-error">
+                    There are no proxies in the database.
+                </div>
+            {% endif %}
+            <div ng-controller="filters">
+                <hr>
+                <a
+                    class="btn clearfix pull-right"
+                    ng-click="status = true;"
+                    ng-show="!status"
+                    >
+                    <i class="icon-cogs"></i>
+                    Filter Results
+                </a>
+                <div class="page-header" ng-show="status">
+                    <a
+                        class="btn pull-right"
+                        ng-click="status = false;"
+                        >
+                        <i class="icon-cogs"></i>
+                        Hide Filters
+                    </a>
+                    <h1>Filters</h1>
+                </div>
+                <p ng-show="status">
+                    You may use the following filter settings to limit
+                    information displayed above to results that match your
+                    criteria.
+                </p>
+                <hr ng-show="status">
+                <form
+                    action="{{ url_for('users.proxies_process') }}"
+                    class="form-horizontal"
+                    method="post"
+                    ng-show="status"
+                    >
+                    {{ macros.form(form) }}
+                    <div class="form-actions">
+                        <button
+                            class="btn btn-success"
+                            name="submit"
+                            type="submit"
+                            value="set"
+                            >
+                            <i class="icon-plus-sign-alt"></i>
+                            Set
+                        </button>
+                        <button
+                            class="btn btn-danger"
+                            name="submit"
+                            type="submit"
+                            value="unset"
+                            >
+                            <i class="icon-minus-sign-alt"></i>
+                            Unset
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

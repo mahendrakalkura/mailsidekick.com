@@ -1,0 +1,42 @@
+{% import 'macros.html' as macros with context %}
+
+<!doctype html>
+<html lang="en" ng-app="application">
+    <head>
+        <link href="{{ url_for('static', filename='images/favicon.ico') }}" rel="shortcut icon">
+        <meta charset="utf-8">
+        <title>{{ title }} - Others - mailsidekick.com</title>
+        {% assets "stylesheets" %}
+            <link href="{{ ASSET_URL }}" rel="stylesheet" type="text/css">
+        {% endassets %}
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="span12 top">
+                    <p class="clearfix">
+                        <a
+                            class="two pull-right"
+                            href="{{ url_for('others.dashboard') }}"
+                            >
+                            <img src="{{ url_for('static', filename='images/2.png')}}">
+                        </a>
+                        <a
+                            class="one"
+                            href="{{ url_for('others.dashboard') }}"
+                            >
+                            <img src="{{ url_for('static', filename='images/1.png')}}">
+                        </a>
+                    </p>
+                    <hr>
+                </div>
+            </div>
+            {% block component %}
+            {% endblock %}
+            {{ macros.copyright() }}
+            {% assets "javascripts" %}
+                <script src="{{ ASSET_URL }}" type="text/javascript"></script>
+            {% endassets %}
+        </div>
+    </body>
+</html>

@@ -1,0 +1,163 @@
+{% import 'macros.html' as macros with context %}
+
+{% extends 'users/layout.html' %}
+
+{% set navbar = 'others' %}
+{% set title = 'Custom Variables - Overview' %}
+
+{% block component %}
+    <div class="row">
+        <div class="span12">
+            <div class="page-header">
+                {{ macros.videos('variables') }}
+                <a
+                    class="btn btn-success pull-right"
+                    href="{{ url_for('users.variables_add') }}"
+                    >
+                    <span class="icon-plus"></span>
+                    Add
+                </a>
+                <h1>{{ title }}</h1>
+            </div>
+            <p>
+                Variables are used to easily insert content into your email
+                templates that may be modified from a single point. Example:
+                {{ '{{' }} hours {{ '}}' }} could insert: Mon-Fri 9:00AM -
+                5:00PM and we're closed on weekends. By inserting the variable
+                {{ '{{' }} hours {{ '}}' }} into your email templates, your
+                recipients will see the content defined here. Want to change
+                your hours? No problem, come back here and modify the variable.
+                Avoid tedious changes to email templates with variables.
+            </p>
+            <hr>
+            {% if variables %}
+                <form
+                    action="{{ url_for('users.variables_process') }}"
+                    data-caption="custom variables"
+                    method="post"
+                    ng-controller="overview"
+                    >
+                    {{ macros.pagination({'name': 'users.variables_process', 'options': {},}, pager) }}
+                    <table class="table table-hover table-striped">
+                        <tr>
+                            <th class="narrow center">
+                                <input type="checkbox">
+                            </th>
+                            {{ macros.th({'name': 'users.variables_process', 'options': {},}, order_by, 'key', 'Key', '') }}
+                            <th class="buttons">Actions</th>
+                        </tr>
+                        {% for variable in variables %}
+                            <tr>
+                                <td class="narrow center">
+                                    <input
+                                        data-caption="{{ variable.key }}"
+                                        name="ids"
+                                        type="checkbox"
+                                        value="{{ variable.id }}"
+                                        >
+                                </td>
+                                <td>{{ variable.key }}</td>
+                                <td class="buttons">
+                                    <a
+                                        class="btn btn-mini btn-success"
+                                        href="{{ url_for('users.variables_edit', id=variable.id) }}"
+                                        >
+                                        <i class="icon-edit-sign"></i>
+                                        Edit
+                                    </a>
+                                    <a
+                                        class="btn btn-mini btn-danger"
+                                        href="{{ url_for('users.variables_delete', id=variable.id) }}"
+                                        >
+                                        <i class="icon-remove-sign"></i>
+                                        Delete
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    <div class="form-actions">
+                        <button
+                            class="btn btn-danger"
+                            name="submit"
+                            ng-click="process($event, false)"
+                            type="button"
+                            >
+                            <i class="icon-remove-sign"></i>
+                            Delete
+                        </button>
+                        <button
+                            class="hide"
+                            name="submit"
+                            type="submit"
+                            value="delete"
+                            >
+                        </button>
+                    </div>
+                    {{ macros.pagination({'name': 'users.variables_process', 'options': {},}, pager) }}
+                    {{ macros.overview() }}
+                </form>
+            {% else %}
+                <div class="alert alert-error">
+                    You have not created any variables yet. Click "Add" to get
+                    started now.
+                </div>
+            {% endif %}
+            <div ng-controller="filters">
+                <hr>
+                <a
+                    class="btn clearfix pull-right"
+                    ng-click="status = true;"
+                    ng-show="!status"
+                    >
+                    <i class="icon-cogs"></i>
+                    Filter Results
+                </a>
+                <div class="page-header" ng-show="status">
+                    <a
+                        class="btn pull-right"
+                        ng-click="status = false;"
+                        >
+                        <i class="icon-cogs"></i>
+                        Hide Filters
+                    </a>
+                    <h1>Filters</h1>
+                </div>
+                <p ng-show="status">
+                    You may use the following filter settings to limit
+                    information displayed above to results that match your
+                    criteria.
+                </p>
+                <hr ng-show="status">
+                <form
+                    action="{{ url_for('users.variables_process') }}"
+                    class="form-horizontal"
+                    method="post"
+                    ng-show="status"
+                    >
+                    {{ macros.form(form) }}
+                    <div class="form-actions">
+                        <button
+                            class="btn btn-success"
+                            name="submit"
+                            type="submit"
+                            value="set"
+                            >
+                            <i class="icon-plus-sign-alt"></i>
+                            Set
+                        </button>
+                        <button
+                            class="btn btn-danger"
+                            name="submit"
+                            type="submit"
+                            value="unset"
+                            >
+                            <i class="icon-minus-sign-alt"></i>
+                            Unset
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,45 @@
+# -*- coding: utf-8 -*-
+
+# Flask
+
+DEBUG = False
+LOGGER_NAME = 'flask'
+MAX_CONTENT_LENGTH = None
+PERMANENT_SESSION_LIFETIME = 86400
+PROPAGATE_EXCEPTIONS = True
+SECRET_KEY = '...'
+SERVER_NAME = None
+SESSION_COOKIE_NAME = '...'
+TESTING = False
+USE_X_SENDFILE = False
+
+# Flask-DebugToolbar
+
+DEBUG_TB_INTERCEPT_REDIRECTS = False
+DEBUG_TB_PROFILER_ENABLED = True
+
+# Mandrill
+
+MANDRILL_SENDER = ('...', '...')
+MANDRILL_USERNAME = '...'
+MANDRILL_PASSWORD = '...'
+MANDRILL_HOSTNAME = 'smtp.mandrillapp.com'
+MANDRILL_PORT_NUMBER = 465
+
+# MySQL
+
+SQLALCHEMY = (
+    'mysql+mysqldb://%(username)s:%(password)s@%(hostname)s/%(database)s?'
+    'charset=utf8&use_unicode=0'
+) % {
+    'database': '...',
+    'hostname': '...',
+    'password': '...',
+    'username': '...',
+}
+
+# S3
+
+S3_ACCESS_KEY = '...'
+S3_SECRET_KEY = '...'
+S3_BUCKET = '...'

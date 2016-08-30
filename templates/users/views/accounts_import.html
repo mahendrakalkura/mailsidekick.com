@@ -1,0 +1,90 @@
+{% import 'macros.html' as macros with context %}
+
+{% extends 'users/layout.html' %}
+
+{% set navbar = 'groups_and_proxies_and_accounts' %}
+{% set title = 'Email Acccounts - Import' %}
+
+{% block component %}
+    <div class="row">
+        <div class="span12">
+            <div class="page-header">
+                {{ macros.videos('accounts') }}
+                <h1>{{ title }}</h1>
+            </div>
+            <p>
+                You may batch import email accounts by uploading a .csv file in
+                the format outlined below.
+            </p>
+            <hr>
+            <form
+                action="{{ url_for('users.accounts_import') }}"
+                class="form-horizontal"
+                enctype="multipart/form-data"
+                method="post"
+                >
+                <div class="control-group">
+                    <label class="control-label"><strong>File</strong></label>
+                    <div class="controls">
+                        <input name="file" type="file" filestyle>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-success" type="submit">
+                        <i class="icon-info-sign"></i>
+                        Submit
+                    </button>
+                    <button class="btn btn-danger" type="reset">
+                        <i class="icon-trash"></i>
+                        Reset
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span8">
+            <p><strong>Notes:</strong></p>
+            <ul class="notes">
+                <li>The file must be a valid CSV file.</li>
+                <li>The file name must end with .csv.</li>
+                <li>
+                    The file must contain all of these columns (in any order;
+                    extra columns present will be ignored).
+                    <ol>
+                        {% for header in headers %}
+                            <li>
+                                <dl>
+                                    <dt>{{ header[0] }}</dt>
+                                    {% if header[1] %}
+                                        {% for item in header[1] %}
+                                            <dd>- {{ item }}</dd>
+                                        {% endfor %}
+                                    {% endif %}
+                                </dl>
+                            </li>
+                        {% endfor %}
+                    </ol>
+                </li>
+            </ul>
+        </div>
+        <div class="span4">
+            <div class="well well-large">
+                <p>
+                    For your convenience we have included a template that you may
+                    use to enter as many email accounts as you wish to upload.
+                    Simply complete the template, save, then upload here.
+                </p>
+                <p class="center">
+                    <a
+                        class="btn"
+                        href="{{ url_for('static', filename='files/others/importemailtemplate.csv') }}"
+                        target="_blank"
+                        >
+                        Download
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

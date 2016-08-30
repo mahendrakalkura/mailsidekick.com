@@ -1,0 +1,34 @@
+{% extends 'others/layout.html' %}
+
+{% set title = 'Dashboard' %}
+
+{% block component %}
+    <div class="row">
+        <div class="span6">
+            <div class="center well well-large">
+                <h4>Administrators Panel</h4>
+                <p>
+                    Are you an administrator?
+                    <br>
+                    If yes,
+                    <a href="{{ url_for('administrators.sign_in') }}">
+                        click here
+                    </a>
+                    to sign in.
+                </p>
+            </div>
+        </div>
+        <div class="span6">
+            <div class="center well well-large">
+                <h4>Users Panel</h4>
+                <p>
+                    Are you a user?
+                    <br>
+                    If yes,
+                    <a href="{{ url_for('users.sign_in') }}">click here</a>
+                    to sign in.
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

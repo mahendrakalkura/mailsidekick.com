@@ -1,0 +1,390 @@
+{% import 'macros.html' as macros with context %}
+
+<!doctype html>
+<html lang="en" ng-app="application">
+    <head>
+        <link
+            href="{{ url_for('static', filename='images/favicon.ico') }}"
+            rel="shortcut icon"
+            >
+        {% assets "stylesheets" %}
+            <link href="{{ ASSET_URL }}" rel="stylesheet" type="text/css">
+        {% endassets %}
+        <meta charset="utf-8">
+        <title>{{ title }} - Users - mailsidekick.com</title>
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="span12 top">
+                    <p class="clearfix">
+                        <a
+                            class="one pull-left"
+                            href="{{ url_for('users.dashboard_overview') }}"
+                            >
+                            <img src="{{ url_for('static', filename='images/1.png')}}">
+                        </a>
+                        <a
+                            class="two pull-left"
+                            href="{{ url_for('users.dashboard_overview') }}"
+                            >
+                            <img src="{{ url_for('static', filename='images/2.png')}}">
+                        </a>
+                    </p>
+                    {% if g.user %}
+                        <a
+                            class="btn btn-mini btn-info questions"
+                            href="https://perfectsidekick.zendesk.com/hc/en-us"
+                            target="_blank"
+                            >
+                            Questions? Learn to use Mail Sidekick here
+                        </a>
+                        {% if g.user.can_survey() %}
+                            <a
+                                class="btn btn-mini btn-danger survey"
+                                href="{{ url_for('users.survey') }}"
+                                >
+                                <i class="icon-comment"></i>
+                            </a>
+                        {% endif %}
+                        <div class="dropdown pull-right">
+                            <strong
+                                class="cursor dropdown-toggle"
+                                data-hover="dropdown"
+                                data-toggle="dropdown"
+                                >
+                                {{ g.user.get_first_name() }}
+                                <i class="caret"></i>
+                            </strong>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a href="{{ url_for('users.dashboard_overview') }}">
+                                        <i class="icon-home"></i>
+                                        Dashboard
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ url_for('users.redeem') }}">
+                                        <span class="icon-shield"></span>
+                                        Redeem
+                                    </a>
+                                </li>
+                                {% if 'administrator' in session and session['administrator'] %}
+                                    <li>
+                                        <a href="{{ url_for('administrators.dashboard') }}">
+                                            <i class="icon-home"></i>
+                                            Admin Dashboard
+                                        </a>
+                                    </li>
+                                {% endif %}
+                                <li>
+                                    <a href="{{ url_for('users.sign_out') }}">
+                                        <i class="icon-signout"></i>
+                                        Sign Out
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="span12">
+                    <div class="navbar">
+                        <div class="navbar-inner">
+                            <ul class="nav">
+                                {% if g.user %}
+                                    <li class="dropdown {{ 'active' if navbar == 'groups_and_proxies_and_accounts' else '' }}">
+                                        <a
+                                            data-hover="dropdown"
+                                            href="{{ url_for('users.accounts_overview') }}"
+                                            >
+                                            <i class="icon-user"></i>
+                                            My Email Accounts
+                                        </a>
+                                        <i
+                                            class="caret icon-caret-down dropdown-toggle"
+                                            data-hover="dropdown"
+                                            data-toggle="dropdown"
+                                            ></i>
+                                        <ul class="dropdown-menu">
+                                            <li class="dropdown-submenu">
+                                                <a href="{{ url_for('users.proxies_overview') }}">
+                                                    <i class="icon-group"></i>
+                                                    Proxies
+                                                </a>
+                                                <ul class="dropdown-menu">
+                                                    <li>
+                                                        <a href="{{ url_for('users.proxies_add') }}">
+                                                            <i class="icon-plus-sign">
+                                                            </i>
+                                                            Add New
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li class="dropdown-submenu">
+                                                <a href="{{ url_for('users.groups_overview') }}">
+                                                    <i class="icon-list-alt">
+                                                    </i>
+                                                    Email Account Groups
+                                                </a>
+                                                <ul class="dropdown-menu">
+                                                    <li>
+                                                        <a href="{{ url_for('users.groups_add') }}">
+                                                            <i class="icon-plus-sign">
+                                                            </i>
+                                                            Add New
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li class="dropdown {{ 'active' if navbar == 'templates' else '' }}">
+                                        <a
+                                            data-hover="dropdown"
+                                            href="{{ url_for('users.templates_overview') }}"
+                                            >
+                                            <i class="icon-th-large"></i>
+                                            My Email Templates
+                                        </a>
+                                        <i
+                                            class="caret icon-caret-down dropdown-toggle"
+                                            data-hover="dropdown"
+                                            data-toggle="dropdown"
+                                            ></i>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a href="{{ url_for('users.templates_add') }}">
+                                                    <i class="icon-plus-sign">
+                                                    </i>
+                                                    Add New
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li class="dropdown {{ 'active' if navbar == 'packs_and_filters' else '' }}">
+                                        <a
+                                            data-hover="dropdown"
+                                            href="{{ url_for('users.filters_overview') }}"
+                                            >
+                                            <i class="icon-filter"></i>
+                                            My Recipes
+                                        </a>
+                                        <i
+                                            class="caret icon-caret-down dropdown-toggle"
+                                            data-hover="dropdown"
+                                            data-toggle="dropdown"
+                                            ></i>
+                                        <ul class="dropdown-menu">
+                                            <li class="dropdown-submenu">
+                                                <a href="{{ url_for('users.packs_overview') }}">
+                                                    <i class="icon-list-alt">
+                                                    </i>
+                                                    Recipe Packs
+                                                </a>
+                                                <ul class="dropdown-menu">
+                                                    <li>
+                                                        <a href="{{ url_for('users.packs_add') }}">
+                                                            <i class="icon-plus-sign">
+                                                            </i>
+                                                            Add New
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li class="dropdown {{ 'active' if navbar == 'queues' else '' }}">
+                                        {% set i = g.user.get_items() %}
+                                        {% if i %}
+                                            <a
+                                                data-hover="dropdown"
+                                                href="{{ url_for('users.queues_overview', status='everything') }}"
+                                                >
+                                                <i class="icon-cogs"></i>
+                                                Queues
+                                            </a>
+                                            <i
+                                                class="caret icon-caret-down dropdown-toggle"
+                                                data-hover="dropdown"
+                                                data-toggle="dropdown"
+                                                ></i>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <a href="{{ url_for('users.queues_export') }}">
+                                                        <span class="badge badge-{{ 'success' if i else 'important' }} pull-right">
+                                                            {{ i|length|format_integer }}
+                                                        </span>
+                                                        <i class="icon-download">
+                                                        </i>
+                                                        Export
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        {% else %}
+                                            <a href="{{ url_for('users.queues_overview', status='everything') }}">
+                                                <i class="icon-cogs"></i>
+                                                Queues
+                                            </a>
+                                        {% endif %}
+                                    </li>
+                                    <li class="dropdown {{ 'active' if navbar == 'others' else '' }}">
+                                        <a
+                                            data-hover="dropdown"
+                                            href="{{ url_for('users.variables_overview') }}"
+                                            >
+                                            <i class="icon-certificate"></i>
+                                            Advanced
+                                        </a>
+                                        <i
+                                            class="caret icon-caret-down dropdown-toggle"
+                                            data-hover="dropdown"
+                                            data-toggle="dropdown"
+                                            ></i>
+                                        <ul class="dropdown-menu">
+                                            <li class="dropdown-submenu">
+                                                <a href="{{ url_for('users.variables_overview') }}">
+                                                    <i class="icon-tags"></i>
+                                                    Custom Variables
+                                                </a>
+                                                <ul class="dropdown-menu">
+                                                    <li>
+                                                        <a href="{{ url_for('users.variables_add') }}">
+                                                            <i class="icon-plus-sign">
+                                                            </i>
+                                                            Add New
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li class="dropdown {{ 'active' if navbar == 'settings' else '' }}">
+                                        <a href="{{ url_for('users.settings') }}">
+                                            <i class="icon-wrench"></i>
+                                            Settings
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="{{ 'active' if navbar == 'sign_in' else '' }}">
+                                        <a href="{{ url_for('users.sign_in') }}">
+                                            <i class="icon-signin"></i>
+                                            Sign In
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{ macros.flash() }}
+            {% if g.user and g.user.get_group() in ['Free'] %}
+                <div class="banner well well-large">
+                    {% if g.user.get_seconds() > 0 %}
+                        <div
+                            class="clock"
+                            data-seconds="{{ g.user.get_seconds() }}"
+                            ></div>
+                        <p>
+                            Limited Time Offer: Upgrade To Premium And Save 30%
+                            <br>
+                            Don't Miss Out -
+                            <a
+                                href="http://mailsidekick.com?id={{ g.user.ID }}&signature={{ g.user.get_signature() }}&transfer=yes"
+                                target="_blank"
+                                >Click Here For More Information</a>
+                        </p>
+                    {% else %}
+                        <h1>Ready To Scale Up?</h1>
+                        <p>
+                            Upgrade to Premium and enjoy unlimited email
+                            accounts, priority mail delivery and more!
+                            <a
+                                href="http://mailsidekick.com/c9-1b/"
+                                target="_blank"
+                                >Click here to learn more.</a>
+                        </p>
+                    {% endif %}
+                </div>
+            {% endif %}
+            {% block component %}
+            {% endblock %}
+            {{ macros.copyright() }}
+        </div>
+        <div class="modal fade hide" id="survey">
+            <div class="modal-header">
+                <button
+                    aria-hidden="true"
+                    class="close"
+                    data-dismiss="modal"
+                    type="button"
+                    >&times;</button>
+                <h3>Survey</h3>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Please help us by answering a few quick questions about
+                    Mail Sidekick. Your feedback is very helpful and you'll get
+                    right back to sending as soon as you're done.
+                </p>
+                <p>Thanks!</p>
+            </div>
+            <div class="modal-footer">
+                <a
+                    class="btn btn-danger pull-right"
+                    data-dismiss="modal"
+                    >Not Now</a>
+                <a
+                    class="btn btn-primary pull-left"
+                    href="{{ url_for('users.survey') }}"
+                    >Go to the survey</a>
+            </div>
+        </div>
+        {% assets "javascripts" %}
+            <script src="{{ ASSET_URL }}" type="text/javascript"></script>
+        {% endassets %}
+        {% if not g.mahendra %}
+            <script
+                src="//assets.zendesk.com/external/zenbox/v2.6/zenbox.js"
+                type="text/javascript"
+                ></script>
+            <style type="text/css" media="screen, projection">
+                @import url(//assets.zendesk.com/external/zenbox/v2.6/zenbox.css);
+            </style>
+            <script type="text/javascript">
+                if (typeof(Zenbox) !== 'undefined') {
+                    Zenbox.init({
+                        'dropboxID': '20220348',
+                        'requester_email': '{{ g.user.user_email if g.user else '' }}',
+                        'requester_name': '{{ g.user.display_name if g.user else '' }}',
+                        'tabColor': '#34495e',
+                        'tabImageURL': 'https://assets.zendesk.com/external/zenbox/images/tab_support_right.png',
+                        'tabPosition': 'Right',
+                        'tabTooltip': 'Support',
+                        'url': 'https://perfectsidekick.zendesk.com'
+                    });
+                }
+            </script>
+            <script type="text/javascript">
+                var _gaq = _gaq || [];
+                _gaq.push(['_setAccount', 'UA-47899432-1']);
+                _gaq.push(['_trackPageview']);
+                (function() {
+                    var ga = document.createElement('script');
+                    ga.async = true;
+                    ga.src = (
+                        'https:' == document.location.protocol?
+                        'https://ssl':
+                        'http://www'
+                    ) + '.google-analytics.com/ga.js';
+                    ga.type = 'text/javascript';
+                    var s = document.getElementsByTagName('script')[0];
+                    s.parentNode.insertBefore(ga, s);
+                })();
+            </script>
+        {% endif %}
+    </body>
+</html>

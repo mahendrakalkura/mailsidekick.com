@@ -1,0 +1,28 @@
+{% import 'macros.html' as macros with context %}
+
+{% extends 'users/layout.html' %}
+
+{% set navbar = 'groups_and_proxies_and_accounts' %}
+{% set title = 'Email Acccounts - Overview' %}
+
+{% block component %}
+    <div class="row">
+        <div class="span12">
+            <div class="page-header">
+                {{ macros.videos('accounts') }}
+                <h1>{{ title }}</h1>
+            </div>
+            <p class="alert alert-error">
+                <i class="icon-warning-sign"></i>
+                You are currently on our Free Plan. This plan is free to use
+                and will never expire. However, you may only use one email
+                account at a time. When you're ready to get serious about your
+                marketing, our
+                <a
+                    href="http://mailsidekick.com/premiumplans"
+                    target="_blank"
+                    >Premium Plans are here to meet your needs!</a>
+            </p>
+        </div>
+    </div>
+{% endblock %}

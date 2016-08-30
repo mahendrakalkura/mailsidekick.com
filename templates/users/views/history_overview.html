@@ -1,0 +1,72 @@
+{% import 'macros.html' as macros with context %}
+
+{% extends 'users/layout.html' %}
+
+{% set navbar = 'groups_and_proxies_and_accounts' %}
+{% set title = 'History - ' ~ account.username %}
+
+{% block component %}
+    <div class="row">
+        <div class="span12">
+            <div class="page-header">
+                {{ macros.videos('accounts') }}
+                <a
+                    class="btn btn-success pull-right"
+                    href="{{ url_for('users.history_export', id=account.id) }}"
+                    >
+                    <span class="icon-download"></span>
+                    Export
+                </a>
+                <h1>{{ title }}</h1>
+            </div>
+            {% if queues %}
+                {{ macros.pagination({'name': 'users.history_process', 'options': {'id': account.id},}, pager) }}
+                <table class="table table-hover table-striped">
+                    <tr>
+                        <th class="narrow">Template</th>
+                        <th class="narrow">Recipe</th>
+                        <th class="narrow right">Step</th>
+                        <th>Name &lt;Email&gt;</th>
+                        <th class="narrow">Scheduled At</th>
+                    </tr>
+                    {% for queue in queues %}
+                        <tr>
+                            <td class="narrow">
+                                <i
+                                    class="icon-info-sign pull-right"
+                                    data-container="body"
+                                    data-html="true"
+                                    data-toggle="tooltip"
+                                    title="{{ queue.template.name }}"
+                                    ></i>
+                                {{ queue.template.name|truncate(25) }}
+                            </td>
+                            <td class="narrow">
+                                <i
+                                    class="icon-info-sign pull-right"
+                                    data-container="body"
+                                    data-html="true"
+                                    data-toggle="tooltip"
+                                    title="{{ queue.filter.name }}"
+                                    ></i>
+                                {{ queue.filter.name|truncate(25) }}
+                            </td>
+                            <td class="narrow right">
+                                {{ queue.step + 1 }}
+                            </td>
+                            <td>{{ queue.name }} &lt;{{ queue.email }}&gt;</td>
+                            <td class="narrow">
+                                {{ queue.delivered_at|format_date_and_time}}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                {{ macros.pagination({'name': 'users.history_process', 'options': {'id': account.id},}, pager) }}
+            {% else %}
+                <div class="alert alert-error">
+                    There is no history in this account.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
